@@ -85,17 +85,75 @@ fun InvoicyNavigation(
             composable(
                 route = Screen.InvoiceDetail.route,
                 arguments = listOf(navArgument("invoiceId") { type = NavType.LongType })
-            ) {
-                // TODO: Implémenter InvoiceDetailScreen
+            ) { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getLong("invoiceId") ?: 0L
+                InvoiceDetailScreen(
+                    invoiceId = invoiceId,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToEdit = { id ->
+                        navController.navigate(Screen.InvoiceEdit.createRoute(id))
+                    }
+                )
             }
             
             composable(Screen.InvoiceNew.route) {
-                // TODO: Implémenter InvoiceEditScreen
+                InvoiceEditScreen(
+                    invoiceId = null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                route = Screen.InvoiceEdit.route,
+                arguments = listOf(navArgument("invoiceId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val invoiceId = backStackEntry.arguments?.getLong("invoiceId") ?: 0L
+                InvoiceEditScreen(
+                    invoiceId = invoiceId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             
             // Quotes
             composable(Screen.Quotes.route) {
-                // TODO: Implémenter QuoteListScreen (similaire à InvoiceListScreen)
+                QuoteListScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToQuote = { quoteId ->
+                        navController.navigate(Screen.QuoteDetail.createRoute(quoteId))
+                    },
+                    onNavigateToNewQuote = {
+                        navController.navigate(Screen.QuoteNew.route)
+                    }
+                )
+            }
+            
+            composable(
+                route = Screen.QuoteDetail.route,
+                arguments = listOf(navArgument("quoteId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val quoteId = backStackEntry.arguments?.getLong("quoteId") ?: 0L
+                QuoteEditScreen(
+                    quoteId = quoteId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(Screen.QuoteNew.route) {
+                QuoteEditScreen(
+                    quoteId = null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                route = Screen.QuoteEdit.route,
+                arguments = listOf(navArgument("quoteId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val quoteId = backStackEntry.arguments?.getLong("quoteId") ?: 0L
+                QuoteEditScreen(
+                    quoteId = quoteId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             
             // Clients
@@ -114,12 +172,30 @@ fun InvoicyNavigation(
             composable(
                 route = Screen.ClientDetail.route,
                 arguments = listOf(navArgument("clientId") { type = NavType.LongType })
-            ) {
-                // TODO: Implémenter ClientDetailScreen
+            ) { backStackEntry ->
+                val clientId = backStackEntry.arguments?.getLong("clientId") ?: 0L
+                ClientEditScreen(
+                    clientId = clientId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             
             composable(Screen.ClientNew.route) {
-                // TODO: Implémenter ClientEditScreen
+                ClientEditScreen(
+                    clientId = null,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            composable(
+                route = Screen.ClientEdit.route,
+                arguments = listOf(navArgument("clientId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val clientId = backStackEntry.arguments?.getLong("clientId") ?: 0L
+                ClientEditScreen(
+                    clientId = clientId,
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
             
             // Settings

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.invoicy.app.ui.screen
 
 import androidx.compose.foundation.layout.*

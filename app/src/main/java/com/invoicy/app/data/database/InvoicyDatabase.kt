@@ -17,7 +17,7 @@ import com.invoicy.app.data.entity.*
         Quote::class,
         QuoteItem::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -1,16 +1,25 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.invoicy.app.ui.screen
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,6 +46,7 @@ fun SettingsScreen(
     val language by viewModel.language.collectAsState()
     val theme by viewModel.theme.collectAsState()
     val isPremium by viewModel.isPremium.collectAsState()
+    val primaryColor by viewModel.primaryColor.collectAsState()
     
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
@@ -190,6 +200,34 @@ fun SettingsScreen(
                     icon = Icons.Default.AttachMoney,
                     onClick = { showCurrencyDialog = true }
                 )
+            }
+            
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Icon(Icons.Default.Palette, contentDescription = null)
+                            Text(
+                                text = "Couleur principale",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        
+                        ColorPalette(
+                            selectedColor = primaryColor.toInt(),
+                            onColorSelected = { color ->
+                                viewModel.updatePrimaryColor(color)
+                            }
+                        )
+                    }
+                }
             }
             
             if (!isPremium) {
@@ -374,7 +412,7 @@ fun CurrencyDialog(
 fun RadioOption(
     value: String,
     label: String,
-    selectedValue: String,
+    currentValue: String,
     onSelected: (String) -> Unit
 ) {
     Row(
@@ -384,10 +422,83 @@ fun RadioOption(
         verticalAlignment = Alignment.CenterVertically
     ) {
         RadioButton(
-            selected = value == selectedValue,
+            selected = value == currentValue,
             onClick = { onSelected(value) }
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = label)
+    }
+}
+
+/**
+ * Palette de couleurs avec cercles cliquables
+ */
+@Composable
+fun ColorPalette(
+    selectedColor: Int,
+    onColorSelected: (Int) -> Unit
+) {
+    val colors = listOf(
+        0xFF6200EE.toInt() to "Violet",
+        0xFFE91E63.toInt() to "Rose",
+        0xFFF44336.toInt() to "Rouge",
+        0xFFFF5722.toInt() to "Orange",
+        0xFFFF9800.toInt() to "Ambre",
+        0xFFFFC107.toInt() to "Jaune",
+        0xFF4CAF50.toInt() to "Vert",
+        0xFF009688.toInt() to "Turquoise",
+        0xFF00BCD4.toInt() to "Cyan",
+        0xFF2196F3.toInt() to "Bleu",
+        0xFF3F51B5.toInt() to "Indigo",
+        0xFF9C27B0.toInt() to "Violet foncé",
+        0xFF795548.toInt() to "Marron",
+        0xFF607D8B.toInt() to "Gris bleu"
+    )
+    
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        contentPadding = PaddingValues(vertical = 8.dp)
+    ) {
+        items(colors.size) { index ->
+            val (colorValue, colorName) = colors[index]
+            ColorCircle(
+                color = Color(colorValue),
+                isSelected = selectedColor == colorValue,
+                onClick = { onColorSelected(colorValue) }
+            )
+        }
+    }
+}
+
+/**
+ * Cercle de couleur cliquable
+ */
+@Composable
+fun ColorCircle(
+    color: Color,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .size(if (isSelected) 56.dp else 48.dp)
+            .clip(CircleShape)
+            .background(color)
+            .border(
+                width = if (isSelected) 4.dp else 2.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                shape = CircleShape
+            )
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        if (isSelected) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Selected",
+                tint = Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
     }
 }

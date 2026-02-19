@@ -67,6 +67,13 @@
     <string name="quotes_title">Quotes</string>
     <string name="quote_new">New Quote</string>
     <string name="quote_number">Quote #</string>
+    <string name="quote_date">Issue Date</string>
+    <string name="quote_valid_until">Valid Until</string>
+    <string name="quote_client">Client</string>
+    <string name="quote_status">Status</string>
+    <string name="quote_notes">Notes</string>
+    <string name="quote_discount">Discount</string>
+    <string name="no_quotes">No quotes yet</string>
     <string name="convert_to_invoice">Convert to Invoice</string>
     
     <!-- Settings -->

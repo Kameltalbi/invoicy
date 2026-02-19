@@ -15,6 +15,7 @@ data class Client(
     val phone: String,
     val address: String,
     val country: String,
+    val taxNumber: String = "",
     val isArchived: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
 )

@@ -28,3 +28,5 @@ proguard/
 *.log
 *.keystore
 !debug.keystore
+gradle-8.2/
+gradle.zip
