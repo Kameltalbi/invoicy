@@ -62,8 +62,7 @@ class MainActivity : ComponentActivity() {
             }
             
             InvoicyTheme(
-                darkTheme = darkTheme,
-                primaryColor = Color(primaryColor)
+                darkTheme = darkTheme
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
