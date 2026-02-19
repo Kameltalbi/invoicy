@@ -54,4 +54,14 @@ object DatabaseModule {
     fun provideQuoteItemDao(database: InvoicyDatabase): QuoteItemDao {
         return database.quoteItemDao()
     }
+    
+    @Provides
+    fun provideCategoryDao(database: InvoicyDatabase): CategoryDao {
+        return database.categoryDao()
+    }
+    
+    @Provides
+    fun provideProductDao(database: InvoicyDatabase): ProductDao {
+        return database.productDao()
+    }
 }

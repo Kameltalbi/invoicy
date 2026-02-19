@@ -32,6 +32,7 @@ fun QuoteListScreen(
     viewModel: QuoteViewModel = hiltViewModel()
 ) {
     val quotes by viewModel.quotes.collectAsState()
+    var quoteToDelete by remember { mutableStateOf<com.invoicy.app.data.entity.QuoteWithDetails?>(null) }
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
     
     Scaffold(
@@ -89,50 +90,180 @@ fun QuoteListScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(quotes) { quote ->
-                    Card(
+                    QuoteCard(
+                        quote = quote,
+                        dateFormat = dateFormat,
                         onClick = { onNavigateToQuote(quote.quote.id) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = quote.quote.number,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                QuoteStatusBadge(status = quote.quote.status)
-                            }
-                            
-                            Text(
-                                text = quote.client.name,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = dateFormat.format(Date(quote.quote.issueDate)),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = "${quote.getTotal()} €",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
+                        onEdit = { onNavigateToQuote(quote.quote.id) },
+                        onDelete = { quoteToDelete = quote },
+                        onDuplicate = { viewModel.duplicateQuote(quote.quote.id) },
+                        onConvertToInvoice = { /* TODO: Implement convert */ }
+                    )
+                }
+            }
+        }
+    }
+    
+    // Dialog de confirmation de suppression
+    quoteToDelete?.let { quote ->
+        AlertDialog(
+            onDismissRequest = { quoteToDelete = null },
+            title = { Text("Supprimer le devis") },
+            text = { Text("Êtes-vous sûr de vouloir supprimer le devis ${quote.quote.number} ?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteQuote(quote.quote)
+                        quoteToDelete = null
                     }
+                ) {
+                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { quoteToDelete = null }) {
+                    Text("Annuler")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun QuoteCard(
+    quote: com.invoicy.app.data.entity.QuoteWithDetails,
+    dateFormat: SimpleDateFormat,
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onDuplicate: () -> Unit,
+    onConvertToInvoice: () -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = quote.quote.number,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    QuoteStatusBadge(status = quote.quote.status)
+                }
+                
+                Text(
+                    text = quote.client.name,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = dateFormat.format(Date(quote.quote.issueDate)),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = "${quote.getTotal()} €",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            
+            Box {
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Actions")
+                }
+                
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Voir") },
+                        onClick = {
+                            onClick()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Visibility, contentDescription = null)
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        text = { Text("Modifier") },
+                        onClick = {
+                            onEdit()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Edit, contentDescription = null)
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        text = { Text("Dupliquer") },
+                        onClick = {
+                            onDuplicate()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.ContentCopy, contentDescription = null)
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        text = { Text("Convertir en facture") },
+                        onClick = {
+                            onConvertToInvoice()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Receipt, contentDescription = null)
+                        }
+                    )
+                    
+                    Divider()
+                    
+                    DropdownMenuItem(
+                        text = { Text("Supprimer") },
+                        onClick = {
+                            onDelete()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.error
+                        )
+                    )
                 }
             }
         }

@@ -34,6 +34,7 @@ fun InvoiceListScreen(
     viewModel: InvoiceViewModel = hiltViewModel()
 ) {
     val invoices by viewModel.invoices.collectAsState()
+    var invoiceToDelete by remember { mutableStateOf<InvoiceWithDetails?>(null) }
     
     Scaffold(
         topBar = {
@@ -93,63 +94,199 @@ fun InvoiceListScreen(
                 items(invoices, key = { it.invoice.id }) { invoice ->
                     InvoiceCard(
                         invoice = invoice,
-                        onClick = { onNavigateToInvoice(invoice.invoice.id) }
+                        onClick = { onNavigateToInvoice(invoice.invoice.id) },
+                        onEdit = { onNavigateToInvoice(invoice.invoice.id) },
+                        onDelete = { invoiceToDelete = invoice },
+                        onDuplicate = { viewModel.duplicateInvoice(invoice.invoice.id) },
+                        onMarkPaid = { 
+                            viewModel.updateInvoiceStatus(invoice.invoice.id, InvoiceStatus.PAID)
+                        },
+                        onDownloadPdf = { /* TODO: Implement download */ },
+                        viewModel = hiltViewModel()
                     )
                 }
             }
         }
+    }
+    
+    // Dialog de confirmation de suppression
+    invoiceToDelete?.let { invoice ->
+        AlertDialog(
+            onDismissRequest = { invoiceToDelete = null },
+            title = { Text("Supprimer la facture") },
+            text = { Text("Êtes-vous sûr de vouloir supprimer la facture ${invoice.invoice.number} ?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteInvoice(invoice.invoice)
+                        invoiceToDelete = null
+                    }
+                ) {
+                    Text("Supprimer", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { invoiceToDelete = null }) {
+                    Text("Annuler")
+                }
+            }
+        )
     }
 }
 
 @Composable
 fun InvoiceCard(
     invoice: InvoiceWithDetails,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onDuplicate: () -> Unit,
+    onMarkPaid: () -> Unit,
+    onDownloadPdf: () -> Unit,
+    viewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    val currency by viewModel.currency.collectAsState()
+    var showMenu by remember { mutableStateOf(false) }
     
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = invoice.invoice.number,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    InvoiceStatusChip(status = invoice.invoice.status)
+                }
+                
                 Text(
-                    text = invoice.invoice.number,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    text = invoice.client.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
-                InvoiceStatusChip(status = invoice.invoice.status)
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = dateFormat.format(Date(invoice.invoice.issueDate)),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = com.invoicy.app.utils.CurrencyFormatter.format(invoice.getTotal(), currency),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
             
-            Text(
-                text = invoice.client.name,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-            )
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = dateFormat.format(Date(invoice.invoice.issueDate)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-                Text(
-                    text = String.format("%.2f €", invoice.getTotal()),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            Box {
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Actions")
+                }
+                
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Voir") },
+                        onClick = {
+                            onClick()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Visibility, contentDescription = null)
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        text = { Text("Modifier") },
+                        onClick = {
+                            onEdit()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Edit, contentDescription = null)
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        text = { Text("Dupliquer") },
+                        onClick = {
+                            onDuplicate()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.ContentCopy, contentDescription = null)
+                        }
+                    )
+                    
+                    if (invoice.invoice.status != InvoiceStatus.PAID) {
+                        DropdownMenuItem(
+                            text = { Text("Marquer payée") },
+                            onClick = {
+                                onMarkPaid()
+                                showMenu = false
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null)
+                            }
+                        )
+                    }
+                    
+                    DropdownMenuItem(
+                        text = { Text("Télécharger PDF") },
+                        onClick = {
+                            onDownloadPdf()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(Icons.Default.Download, contentDescription = null)
+                        }
+                    )
+                    
+                    Divider()
+                    
+                    DropdownMenuItem(
+                        text = { Text("Supprimer") },
+                        onClick = {
+                            onDelete()
+                            showMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        colors = MenuDefaults.itemColors(
+                            textColor = MaterialTheme.colorScheme.error
+                        )
+                    )
+                }
             }
         }
     }

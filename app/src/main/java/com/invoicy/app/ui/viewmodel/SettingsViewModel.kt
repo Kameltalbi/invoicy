@@ -53,6 +53,18 @@ class SettingsViewModel @Inject constructor(
     val isPremium: StateFlow<Boolean> = userPreferences.isPremium
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
     
+    val invoicePrefix: StateFlow<String> = userPreferences.invoicePrefix
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "INV")
+    
+    val invoiceYearReset: StateFlow<Boolean> = userPreferences.invoiceYearReset
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    
+    val quotePrefix: StateFlow<String> = userPreferences.quotePrefix
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "QUO")
+    
+    val quoteYearReset: StateFlow<Boolean> = userPreferences.quoteYearReset
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+    
     fun updateCompanyName(value: String) {
         viewModelScope.launch {
             userPreferences.setCompanyName(value)
@@ -122,6 +134,20 @@ class SettingsViewModel @Inject constructor(
     fun upgradeToPremium() {
         viewModelScope.launch {
             userPreferences.setIsPremium(true)
+        }
+    }
+    
+    fun updateInvoiceNumbering(prefix: String, yearReset: Boolean) {
+        viewModelScope.launch {
+            userPreferences.setInvoicePrefix(prefix)
+            userPreferences.setInvoiceYearReset(yearReset)
+        }
+    }
+    
+    fun updateQuoteNumbering(prefix: String, yearReset: Boolean) {
+        viewModelScope.launch {
+            userPreferences.setQuotePrefix(prefix)
+            userPreferences.setQuoteYearReset(yearReset)
         }
     }
 }

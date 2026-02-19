@@ -75,15 +75,41 @@ class ShareHelper @Inject constructor(
     
     /**
      * Copie le PDF dans le dossier Downloads
+     * Utilise MediaStore pour Android 10+ (Scoped Storage)
      */
     fun savePdfToDownloads(file: File): Boolean {
         return try {
-            val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
-                android.os.Environment.DIRECTORY_DOWNLOADS
-            )
-            val destFile = File(downloadsDir, file.name)
-            file.copyTo(destFile, overwrite = true)
-            true
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                // Android 10+ : Utiliser MediaStore
+                val contentValues = android.content.ContentValues().apply {
+                    put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, file.name)
+                    put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS)
+                }
+                
+                val resolver = context.contentResolver
+                val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                
+                uri?.let {
+                    resolver.openOutputStream(it)?.use { outputStream ->
+                        file.inputStream().use { inputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                    true
+                } ?: false
+            } else {
+                // Android 9 et inférieur : Accès direct
+                val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(
+                    android.os.Environment.DIRECTORY_DOWNLOADS
+                )
+                if (!downloadsDir.exists()) {
+                    downloadsDir.mkdirs()
+                }
+                val destFile = File(downloadsDir, file.name)
+                file.copyTo(destFile, overwrite = true)
+                true
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             false

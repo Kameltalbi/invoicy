@@ -51,6 +51,8 @@ fun SettingsScreen(
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
     var showCurrencyDialog by remember { mutableStateOf(false) }
+    var showInvoiceNumberingDialog by remember { mutableStateOf(false) }
+    var showQuoteNumberingDialog by remember { mutableStateOf(false) }
     
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -230,6 +232,34 @@ fun SettingsScreen(
                 }
             }
             
+            item {
+                Divider()
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Numérotation",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Configuration factures",
+                    value = "Personnaliser le format",
+                    icon = Icons.Default.Receipt,
+                    onClick = { showInvoiceNumberingDialog = true }
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Configuration devis",
+                    value = "Personnaliser le format",
+                    icon = Icons.Default.Description,
+                    onClick = { showQuoteNumberingDialog = true }
+                )
+            }
+            
             if (!isPremium) {
                 item {
                     Card(
@@ -294,6 +324,32 @@ fun SettingsScreen(
                 viewModel.updateCurrency(it)
                 showCurrencyDialog = false
             }
+        )
+    }
+    
+    if (showInvoiceNumberingDialog) {
+        NumberingConfigDialog(
+            title = "Configuration factures",
+            currentPrefix = viewModel.invoicePrefix.collectAsState().value,
+            currentYearReset = viewModel.invoiceYearReset.collectAsState().value,
+            onSave = { prefix, yearReset ->
+                viewModel.updateInvoiceNumbering(prefix, yearReset)
+                showInvoiceNumberingDialog = false
+            },
+            onDismiss = { showInvoiceNumberingDialog = false }
+        )
+    }
+    
+    if (showQuoteNumberingDialog) {
+        NumberingConfigDialog(
+            title = "Configuration devis",
+            currentPrefix = viewModel.quotePrefix.collectAsState().value,
+            currentYearReset = viewModel.quoteYearReset.collectAsState().value,
+            onSave = { prefix, yearReset ->
+                viewModel.updateQuoteNumbering(prefix, yearReset)
+                showQuoteNumberingDialog = false
+            },
+            onDismiss = { showQuoteNumberingDialog = false }
         )
     }
 }
@@ -434,25 +490,122 @@ fun RadioOption(
  * Palette de couleurs avec cercles cliquables
  */
 @Composable
+fun NumberingConfigDialog(
+    title: String,
+    currentPrefix: String,
+    currentYearReset: Boolean,
+    onSave: (String, Boolean) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var prefix by remember { mutableStateOf(currentPrefix) }
+    var yearReset by remember { mutableStateOf(currentYearReset) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = prefix,
+                    onValueChange = { prefix = it.uppercase() },
+                    label = { Text("Préfixe") },
+                    placeholder = { Text("INV") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Réinitialisation annuelle",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                        Text(
+                            text = "Le compteur repart à 1 chaque année",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = yearReset,
+                        onCheckedChange = { yearReset = it }
+                    )
+                }
+                
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "Aperçu du format :",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        Text(
+                            text = if (yearReset) {
+                                "${prefix.ifEmpty { "INV" }}-2026-0001"
+                            } else {
+                                "${prefix.ifEmpty { "INV" }}-0001"
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (prefix.isNotBlank()) {
+                        onSave(prefix, yearReset)
+                    }
+                }
+            ) {
+                Text("Enregistrer")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
+}
+
+@Composable
 fun ColorPalette(
     selectedColor: Int,
     onColorSelected: (Int) -> Unit
 ) {
     val colors = listOf(
-        0xFF6200EE.toInt() to "Violet",
-        0xFFE91E63.toInt() to "Rose",
-        0xFFF44336.toInt() to "Rouge",
-        0xFFFF5722.toInt() to "Orange",
-        0xFFFF9800.toInt() to "Ambre",
-        0xFFFFC107.toInt() to "Jaune",
-        0xFF4CAF50.toInt() to "Vert",
-        0xFF009688.toInt() to "Turquoise",
-        0xFF00BCD4.toInt() to "Cyan",
-        0xFF2196F3.toInt() to "Bleu",
-        0xFF3F51B5.toInt() to "Indigo",
-        0xFF9C27B0.toInt() to "Violet foncé",
-        0xFF795548.toInt() to "Marron",
-        0xFF607D8B.toInt() to "Gris bleu"
+        0xFF1E3A8A.toInt() to "Bleu Royal",
+        0xFF0F766E.toInt() to "Turquoise Pro",
+        0xFF065F46.toInt() to "Vert Émeraude",
+        0xFF7C3AED.toInt() to "Violet Pro",
+        0xFFDB2777.toInt() to "Rose Moderne",
+        0xFFDC2626.toInt() to "Rouge Corporate",
+        0xFFEA580C.toInt() to "Orange Vif",
+        0xFF0891B2.toInt() to "Cyan Pro",
+        0xFF4F46E5.toInt() to "Indigo Moderne",
+        0xFF059669.toInt() to "Vert Menthe",
+        0xFF7E22CE.toInt() to "Pourpre Pro",
+        0xFF0E7490.toInt() to "Bleu Océan",
+        0xFF1F2937.toInt() to "Gris Anthracite",
+        0xFF0C4A6E.toInt() to "Bleu Nuit"
     )
     
     LazyRow(

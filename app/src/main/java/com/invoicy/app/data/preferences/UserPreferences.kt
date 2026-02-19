@@ -35,6 +35,16 @@ class UserPreferences @Inject constructor(
         private val PRIMARY_COLOR = intPreferencesKey("primary_color")
         private val IS_PREMIUM = booleanPreferencesKey("is_premium")
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        
+        // Numérotation
+        private val INVOICE_PREFIX = stringPreferencesKey("invoice_prefix")
+        private val INVOICE_YEAR_RESET = booleanPreferencesKey("invoice_year_reset")
+        private val INVOICE_LAST_YEAR = intPreferencesKey("invoice_last_year")
+        private val INVOICE_COUNTER = intPreferencesKey("invoice_counter")
+        private val QUOTE_PREFIX = stringPreferencesKey("quote_prefix")
+        private val QUOTE_YEAR_RESET = booleanPreferencesKey("quote_year_reset")
+        private val QUOTE_LAST_YEAR = intPreferencesKey("quote_last_year")
+        private val QUOTE_COUNTER = intPreferencesKey("quote_counter")
     }
     
     // Profil émetteur
@@ -53,6 +63,16 @@ class UserPreferences @Inject constructor(
     val primaryColor: Flow<Int> = dataStore.data.map { it[PRIMARY_COLOR] ?: 0xFF6200EE.toInt() }
     val isPremium: Flow<Boolean> = dataStore.data.map { it[IS_PREMIUM] ?: false }
     val onboardingCompleted: Flow<Boolean> = dataStore.data.map { it[ONBOARDING_COMPLETED] ?: false }
+    
+    // Numérotation
+    val invoicePrefix: Flow<String> = dataStore.data.map { it[INVOICE_PREFIX] ?: "INV" }
+    val invoiceYearReset: Flow<Boolean> = dataStore.data.map { it[INVOICE_YEAR_RESET] ?: true }
+    val invoiceLastYear: Flow<Int> = dataStore.data.map { it[INVOICE_LAST_YEAR] ?: 0 }
+    val invoiceCounter: Flow<Int> = dataStore.data.map { it[INVOICE_COUNTER] ?: 0 }
+    val quotePrefix: Flow<String> = dataStore.data.map { it[QUOTE_PREFIX] ?: "QUO" }
+    val quoteYearReset: Flow<Boolean> = dataStore.data.map { it[QUOTE_YEAR_RESET] ?: true }
+    val quoteLastYear: Flow<Int> = dataStore.data.map { it[QUOTE_LAST_YEAR] ?: 0 }
+    val quoteCounter: Flow<Int> = dataStore.data.map { it[QUOTE_COUNTER] ?: 0 }
     
     suspend fun setCompanyName(value: String) {
         dataStore.edit { it[COMPANY_NAME] = value }
@@ -110,5 +130,38 @@ class UserPreferences @Inject constructor(
     
     suspend fun setOnboardingCompleted(value: Boolean) {
         dataStore.edit { it[ONBOARDING_COMPLETED] = value }
+    }
+    
+    // Numérotation
+    suspend fun setInvoicePrefix(value: String) {
+        dataStore.edit { it[INVOICE_PREFIX] = value }
+    }
+    
+    suspend fun setInvoiceYearReset(value: Boolean) {
+        dataStore.edit { it[INVOICE_YEAR_RESET] = value }
+    }
+    
+    suspend fun setInvoiceLastYear(value: Int) {
+        dataStore.edit { it[INVOICE_LAST_YEAR] = value }
+    }
+    
+    suspend fun setInvoiceCounter(value: Int) {
+        dataStore.edit { it[INVOICE_COUNTER] = value }
+    }
+    
+    suspend fun setQuotePrefix(value: String) {
+        dataStore.edit { it[QUOTE_PREFIX] = value }
+    }
+    
+    suspend fun setQuoteYearReset(value: Boolean) {
+        dataStore.edit { it[QUOTE_YEAR_RESET] = value }
+    }
+    
+    suspend fun setQuoteLastYear(value: Int) {
+        dataStore.edit { it[QUOTE_LAST_YEAR] = value }
+    }
+    
+    suspend fun setQuoteCounter(value: Int) {
+        dataStore.edit { it[QUOTE_COUNTER] = value }
     }
 }

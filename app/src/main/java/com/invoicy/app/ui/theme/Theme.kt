@@ -41,9 +41,26 @@ fun InvoicyTheme(
     primaryColor: Color = Color(0xFF6200EE),
     content: @Composable () -> Unit
 ) {
+    // Calculer les couleurs dérivées de la couleur primaire
+    val primaryContainer = Color(
+        red = (primaryColor.red * 0.8f).coerceIn(0f, 1f),
+        green = (primaryColor.green * 0.8f).coerceIn(0f, 1f),
+        blue = (primaryColor.blue * 0.8f).coerceIn(0f, 1f)
+    )
+    
     val colorScheme = when {
-        darkTheme -> DarkColorScheme.copy(primary = primaryColor)
-        else -> LightColorScheme.copy(primary = primaryColor)
+        darkTheme -> DarkColorScheme.copy(
+            primary = primaryColor,
+            primaryContainer = primaryContainer,
+            secondary = primaryColor,
+            tertiary = primaryColor
+        )
+        else -> LightColorScheme.copy(
+            primary = primaryColor,
+            primaryContainer = primaryContainer,
+            secondary = primaryColor,
+            tertiary = primaryColor
+        )
     }
     
     val view = LocalView.current

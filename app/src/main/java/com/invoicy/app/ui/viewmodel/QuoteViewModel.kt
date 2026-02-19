@@ -79,6 +79,12 @@ class QuoteViewModel @Inject constructor(
         }
     }
     
+    fun duplicateQuote(quoteId: Long) {
+        viewModelScope.launch {
+            quoteRepository.duplicateQuote(quoteId)
+        }
+    }
+    
     suspend fun convertToInvoice(quoteId: Long): Result<Long> {
         return try {
             val quote = quoteRepository.getQuoteByIdSync(quoteId)

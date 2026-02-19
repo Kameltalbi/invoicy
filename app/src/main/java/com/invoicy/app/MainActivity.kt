@@ -14,6 +14,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.invoicy.app.data.preferences.UserPreferences
 import com.invoicy.app.ui.navigation.InvoicyNavigation
+import com.invoicy.app.ui.navigation.MainScreen
 import com.invoicy.app.ui.theme.InvoicyTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
@@ -68,7 +69,13 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    InvoicyNavigation(userPreferences = userPreferences)
+                    val onboardingCompleted by userPreferences.onboardingCompleted.collectAsState(initial = false)
+                    
+                    if (onboardingCompleted) {
+                        MainScreen()
+                    } else {
+                        InvoicyNavigation(userPreferences = userPreferences)
+                    }
                 }
             }
         }

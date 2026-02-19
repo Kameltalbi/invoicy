@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.invoicy.app.R
 import com.invoicy.app.data.entity.*
 import com.invoicy.app.ui.viewmodel.ClientViewModel
+import com.invoicy.app.ui.viewmodel.ProductViewModel
 import com.invoicy.app.ui.viewmodel.QuoteViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -33,10 +34,12 @@ fun QuoteEditScreen(
     quoteId: Long? = null,
     onNavigateBack: () -> Unit,
     quoteViewModel: QuoteViewModel = hiltViewModel(),
-    clientViewModel: ClientViewModel = hiltViewModel()
+    clientViewModel: ClientViewModel = hiltViewModel(),
+    productViewModel: ProductViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     val clients by clientViewModel.clients.collectAsState()
+    val products by productViewModel.products.collectAsState()
     val uiState by quoteViewModel.uiState.collectAsState()
     
     var quoteNumber by remember { mutableStateOf("") }
@@ -49,6 +52,7 @@ fun QuoteEditScreen(
     var items by remember { mutableStateOf(listOf<QuoteItemData>()) }
     var showClientDialog by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    var showProductDialog by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
     
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
@@ -276,12 +280,19 @@ fun QuoteEditScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
-                    IconButton(
-                        onClick = {
-                            items = items + QuoteItemData()
+                    Row {
+                        IconButton(
+                            onClick = { showProductDialog = true }
+                        ) {
+                            Icon(Icons.Default.Inventory, contentDescription = "Ajouter depuis catalogue")
                         }
-                    ) {
-                        Icon(Icons.Default.Add, contentDescription = "Add item")
+                        IconButton(
+                            onClick = {
+                                items = items + QuoteItemData()
+                            }
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Ajouter ligne vide")
+                        }
                     }
                 }
             }
@@ -339,6 +350,22 @@ fun QuoteEditScreen(
                 showStatusDialog = false
             },
             onDismiss = { showStatusDialog = false }
+        )
+    }
+    
+    if (showProductDialog) {
+        ProductSelectionDialog(
+            products = products,
+            onProductSelected = { product ->
+                items = items + QuoteItemData(
+                    description = product.product.name,
+                    quantity = "1",
+                    unitPrice = product.product.unitPrice.toString(),
+                    vatRate = product.product.vatRate.toString()
+                )
+                showProductDialog = false
+            },
+            onDismiss = { showProductDialog = false }
         )
     }
 }
@@ -458,3 +485,64 @@ data class QuoteItemData(
     val unitPrice: String = "0",
     val vatRate: String = "20"
 )
+
+@Composable
+fun ProductSelectionDialog(
+    products: List<com.invoicy.app.data.entity.ProductWithCategory>,
+    onProductSelected: (com.invoicy.app.data.entity.ProductWithCategory) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Sélectionner un produit") },
+        text = {
+            if (products.isEmpty()) {
+                Text("Aucun produit disponible. Créez d'abord des produits dans le catalogue.")
+            } else {
+                LazyColumn {
+                    items(products.size) { index ->
+                        val product = products[index]
+                        Card(
+                            onClick = { onProductSelected(product) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = product.product.name,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = product.category.name,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Text(
+                                    text = "${product.product.unitPrice} €",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
+}

@@ -3,6 +3,7 @@ package com.invoicy.app.data.repository
 import com.invoicy.app.data.dao.InvoiceDao
 import com.invoicy.app.data.dao.InvoiceItemDao
 import com.invoicy.app.data.entity.*
+import com.invoicy.app.utils.NumberingService
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,7 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class InvoiceRepository @Inject constructor(
     private val invoiceDao: InvoiceDao,
-    private val invoiceItemDao: InvoiceItemDao
+    private val invoiceItemDao: InvoiceItemDao,
+    private val numberingService: NumberingService
 ) {
     fun getAllInvoices(): Flow<List<InvoiceWithDetails>> = invoiceDao.getAllInvoices()
     
@@ -70,16 +72,7 @@ class InvoiceRepository @Inject constructor(
     }
     
     suspend fun generateInvoiceNumber(): String {
-        val lastNumber = invoiceDao.getLastInvoiceNumber()
-        val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date())
-        
-        return if (lastNumber != null && lastNumber.contains(year)) {
-            val parts = lastNumber.split("-")
-            val number = parts.lastOrNull()?.toIntOrNull() ?: 0
-            "FAC-$year-${String.format("%03d", number + 1)}"
-        } else {
-            "FAC-$year-001"
-        }
+        return numberingService.generateInvoiceNumber()
     }
     
     fun getInvoiceCountByStatus(status: InvoiceStatus): Flow<Int> = 

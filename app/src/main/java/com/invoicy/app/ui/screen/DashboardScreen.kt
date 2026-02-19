@@ -27,9 +27,11 @@ fun DashboardScreen(
     onNavigateToQuotes: () -> Unit,
     onNavigateToClients: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    viewModel: DashboardViewModel = hiltViewModel()
+    viewModel: DashboardViewModel = hiltViewModel(),
+    settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val currency by settingsViewModel.currency.collectAsState()
     
     Scaffold(
         topBar = {
@@ -76,7 +78,7 @@ fun DashboardScreen(
                         StatCard(
                             modifier = Modifier.weight(1f),
                             title = stringResource(R.string.dashboard_total_invoiced),
-                            value = String.format("%.2f €", uiState.totalInvoicedThisMonth),
+                            value = com.invoicy.app.utils.CurrencyFormatter.format(uiState.totalInvoicedThisMonth, currency),
                             icon = Icons.Default.AttachMoney,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -84,7 +86,7 @@ fun DashboardScreen(
                         StatCard(
                             modifier = Modifier.weight(1f),
                             title = stringResource(R.string.dashboard_total_paid),
-                            value = String.format("%.2f €", uiState.totalPaidThisMonth),
+                            value = com.invoicy.app.utils.CurrencyFormatter.format(uiState.totalPaidThisMonth, currency),
                             icon = Icons.Default.CheckCircle,
                             color = MaterialTheme.colorScheme.tertiary
                         )

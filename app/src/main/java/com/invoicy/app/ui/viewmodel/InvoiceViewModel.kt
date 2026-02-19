@@ -83,6 +83,16 @@ class InvoiceViewModel @Inject constructor(
         }
     }
     
+    fun updateInvoiceStatus(invoiceId: Long, status: InvoiceStatus) {
+        viewModelScope.launch {
+            val invoice = invoiceRepository.getInvoiceByIdSync(invoiceId)
+            if (invoice != null) {
+                val updatedInvoice = invoice.invoice.copy(status = status)
+                invoiceRepository.updateInvoice(updatedInvoice, invoice.items)
+            }
+        }
+    }
+    
     suspend fun generatePdf(invoiceId: Long): Result<File> {
         return try {
             val invoice = invoiceRepository.getInvoiceByIdSync(invoiceId)

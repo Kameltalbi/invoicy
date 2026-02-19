@@ -3,6 +3,7 @@ package com.invoicy.app.data.repository
 import com.invoicy.app.data.dao.QuoteDao
 import com.invoicy.app.data.dao.QuoteItemDao
 import com.invoicy.app.data.entity.*
+import com.invoicy.app.utils.NumberingService
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.*
@@ -15,7 +16,8 @@ import javax.inject.Singleton
 @Singleton
 class QuoteRepository @Inject constructor(
     private val quoteDao: QuoteDao,
-    private val quoteItemDao: QuoteItemDao
+    private val quoteItemDao: QuoteItemDao,
+    private val numberingService: NumberingService
 ) {
     fun getAllQuotes(): Flow<List<QuoteWithDetails>> = quoteDao.getAllQuotes()
     
@@ -55,16 +57,23 @@ class QuoteRepository @Inject constructor(
     }
     
     suspend fun generateQuoteNumber(): String {
-        val lastNumber = quoteDao.getLastQuoteNumber()
-        val year = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date())
+        return numberingService.generateQuoteNumber()
+    }
+    
+    suspend fun duplicateQuote(quoteId: Long): Long {
+        val original = getQuoteByIdSync(quoteId) ?: throw Exception("Quote not found")
+        val newNumber = generateQuoteNumber()
         
-        return if (lastNumber != null && lastNumber.contains(year)) {
-            val parts = lastNumber.split("-")
-            val number = parts.lastOrNull()?.toIntOrNull() ?: 0
-            "DEV-$year-${String.format("%03d", number + 1)}"
-        } else {
-            "DEV-$year-001"
-        }
+        val newQuote = original.quote.copy(
+            id = 0,
+            number = newNumber,
+            issueDate = System.currentTimeMillis(),
+            validUntil = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000),
+            status = QuoteStatus.DRAFT
+        )
+        
+        val newItems = original.items.map { it.copy(id = 0, quoteId = 0) }
+        return insertQuote(newQuote, newItems)
     }
     
     suspend fun getQuoteCount(): Int = quoteDao.getQuoteCount()
