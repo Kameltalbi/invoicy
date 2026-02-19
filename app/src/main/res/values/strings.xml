@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Invoicy</string>
+    
+    <!-- Navigation -->
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_invoices">Invoices</string>
+    <string name="nav_quotes">Quotes</string>
+    <string name="nav_clients">Clients</string>
+    <string name="nav_settings">Settings</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_total_invoiced">Total Invoiced</string>
+    <string name="dashboard_total_paid">Total Paid</string>
+    <string name="dashboard_pending">Pending</string>
+    <string name="dashboard_overdue">Overdue</string>
+    <string name="dashboard_this_month">This Month</string>
+    <string name="dashboard_revenue_chart">Revenue (Last 6 Months)</string>
+    
+    <!-- Invoices -->
+    <string name="invoices_title">Invoices</string>
+    <string name="invoice_new">New Invoice</string>
+    <string name="invoice_number">Invoice #</string>
+    <string name="invoice_date">Issue Date</string>
+    <string name="invoice_due_date">Due Date</string>
+    <string name="invoice_client">Client</string>
+    <string name="invoice_amount">Amount</string>
+    <string name="invoice_status">Status</string>
+    <string name="invoice_notes">Notes</string>
+    <string name="invoice_discount">Discount</string>
+    <string name="invoice_footer">Footer</string>
+    
+    <!-- Invoice Status -->
+    <string name="status_draft">Draft</string>
+    <string name="status_sent">Sent</string>
+    <string name="status_paid">Paid</string>
+    <string name="status_overdue">Overdue</string>
+    <string name="status_accepted">Accepted</string>
+    <string name="status_rejected">Rejected</string>
+    
+    <!-- Invoice Items -->
+    <string name="item_description">Description</string>
+    <string name="item_quantity">Quantity</string>
+    <string name="item_unit_price">Unit Price</string>
+    <string name="item_vat">VAT</string>
+    <string name="item_total">Total</string>
+    <string name="add_item">Add Item</string>
+    
+    <!-- Totals -->
+    <string name="subtotal">Subtotal (excl. VAT)</string>
+    <string name="vat_total">VAT</string>
+    <string name="total">Total (incl. VAT)</string>
+    
+    <!-- Clients -->
+    <string name="clients_title">Clients</string>
+    <string name="client_new">New Client</string>
+    <string name="client_name">Name</string>
+    <string name="client_email">Email</string>
+    <string name="client_phone">Phone</string>
+    <string name="client_address">Address</string>
+    <string name="client_country">Country</string>
+    <string name="client_history">Invoice History</string>
+    
+    <!-- Quotes -->
+    <string name="quotes_title">Quotes</string>
+    <string name="quote_new">New Quote</string>
+    <string name="quote_number">Quote #</string>
+    <string name="convert_to_invoice">Convert to Invoice</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_profile">Profile</string>
+    <string name="settings_company_name">Company Name</string>
+    <string name="settings_email">Email</string>
+    <string name="settings_phone">Phone</string>
+    <string name="settings_address">Address</string>
+    <string name="settings_tax_number">Tax Number / SIRET</string>
+    <string name="settings_logo">Logo</string>
+    <string name="settings_currency">Currency</string>
+    <string name="settings_footer">Default Footer</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_color">Primary Color</string>
+    <string name="settings_upload_logo">Upload Logo</string>
+    
+    <!-- Theme -->
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
+    
+    <!-- Languages -->
+    <string name="lang_english">English</string>
+    <string name="lang_french">Français</string>
+    <string name="lang_arabic">العربية</string>
+    
+    <!-- Actions -->
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_share">Share</string>
+    <string name="action_download">Download PDF</string>
+    <string name="action_send_email">Send by Email</string>
+    <string name="action_send_whatsapp">Send via WhatsApp</string>
+    <string name="action_preview">Preview</string>
+    <string name="action_search">Search</string>
+    
+    <!-- PDF -->
+    <string name="pdf_generating">Generating PDF...</string>
+    <string name="pdf_generated">PDF generated successfully</string>
+    <string name="pdf_error">Error generating PDF</string>
+    <string name="pdf_saved">PDF saved to Downloads</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_start">Get Started</string>
+    <string name="onboarding_title_1">Create Professional Invoices</string>
+    <string name="onboarding_desc_1">Generate beautiful invoices and quotes in seconds</string>
+    <string name="onboarding_title_2">Manage Your Clients</string>
+    <string name="onboarding_desc_2">Keep track of all your clients and their invoice history</string>
+    <string name="onboarding_title_3">Track Your Revenue</string>
+    <string name="onboarding_desc_3">Monitor your income with detailed analytics</string>
+    
+    <!-- Premium -->
+    <string name="premium_title">Upgrade to Premium</string>
+    <string name="premium_desc">Unlock unlimited invoices and advanced features</string>
+    <string name="premium_limit">Free plan: 5 invoices/month</string>
+    <string name="premium_upgrade">Upgrade Now</string>
+    
+    <!-- Validation -->
+    <string name="error_required">This field is required</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="error_select_client">Please select a client</string>
+    <string name="error_add_items">Please add at least one item</string>
+    
+    <!-- Messages -->
+    <string name="msg_saved">Saved successfully</string>
+    <string name="msg_deleted">Deleted successfully</string>
+    <string name="msg_no_data">No data available</string>
+    <string name="msg_confirm_delete">Are you sure you want to delete this?</string>
+    
+    <!-- Email -->
+    <string name="email_subject_invoice">Invoice %1$s</string>
+    <string name="email_subject_quote">Quote %1$s</string>
+    <string name="email_body">Please find attached the document.</string>
+</resources>

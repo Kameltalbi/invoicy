@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="app_name">Invoicy</string>
+    
+    <!-- Navigation -->
+    <string name="nav_dashboard">لوحة التحكم</string>
+    <string name="nav_invoices">الفواتير</string>
+    <string name="nav_quotes">عروض الأسعار</string>
+    <string name="nav_clients">العملاء</string>
+    <string name="nav_settings">الإعدادات</string>
+    
+    <!-- Dashboard -->
+    <string name="dashboard_title">لوحة التحكم</string>
+    <string name="dashboard_total_invoiced">إجمالي الفواتير</string>
+    <string name="dashboard_total_paid">إجمالي المدفوع</string>
+    <string name="dashboard_pending">قيد الانتظار</string>
+    <string name="dashboard_overdue">متأخرة</string>
+    <string name="dashboard_this_month">هذا الشهر</string>
+    <string name="dashboard_revenue_chart">الإيرادات (آخر 6 أشهر)</string>
+    
+    <!-- Invoices -->
+    <string name="invoices_title">الفواتير</string>
+    <string name="invoice_new">فاتورة جديدة</string>
+    <string name="invoice_number">رقم الفاتورة</string>
+    <string name="invoice_date">تاريخ الإصدار</string>
+    <string name="invoice_due_date">تاريخ الاستحقاق</string>
+    <string name="invoice_client">العميل</string>
+    <string name="invoice_amount">المبلغ</string>
+    <string name="invoice_status">الحالة</string>
+    <string name="invoice_notes">ملاحظات</string>
+    <string name="invoice_discount">الخصم</string>
+    <string name="invoice_footer">تذييل الصفحة</string>
+    
+    <!-- Invoice Status -->
+    <string name="status_draft">مسودة</string>
+    <string name="status_sent">مرسلة</string>
+    <string name="status_paid">مدفوعة</string>
+    <string name="status_overdue">متأخرة</string>
+    <string name="status_accepted">مقبول</string>
+    <string name="status_rejected">مرفوض</string>
+    
+    <!-- Invoice Items -->
+    <string name="item_description">الوصف</string>
+    <string name="item_quantity">الكمية</string>
+    <string name="item_unit_price">سعر الوحدة</string>
+    <string name="item_vat">ضريبة القيمة المضافة</string>
+    <string name="item_total">المجموع</string>
+    <string name="add_item">إضافة عنصر</string>
+    
+    <!-- Totals -->
+    <string name="subtotal">المجموع الفرعي (بدون ضريبة)</string>
+    <string name="vat_total">ضريبة القيمة المضافة</string>
+    <string name="total">المجموع الإجمالي (شامل الضريبة)</string>
+    
+    <!-- Clients -->
+    <string name="clients_title">العملاء</string>
+    <string name="client_new">عميل جديد</string>
+    <string name="client_name">الاسم</string>
+    <string name="client_email">البريد الإلكتروني</string>
+    <string name="client_phone">الهاتف</string>
+    <string name="client_address">العنوان</string>
+    <string name="client_country">البلد</string>
+    <string name="client_history">سجل الفواتير</string>
+    
+    <!-- Quotes -->
+    <string name="quotes_title">عروض الأسعار</string>
+    <string name="quote_new">عرض سعر جديد</string>
+    <string name="quote_number">رقم عرض السعر</string>
+    <string name="convert_to_invoice">تحويل إلى فاتورة</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_profile">الملف الشخصي</string>
+    <string name="settings_company_name">اسم الشركة</string>
+    <string name="settings_email">البريد الإلكتروني</string>
+    <string name="settings_phone">الهاتف</string>
+    <string name="settings_address">العنوان</string>
+    <string name="settings_tax_number">الرقم الضريبي</string>
+    <string name="settings_logo">الشعار</string>
+    <string name="settings_currency">العملة</string>
+    <string name="settings_footer">التذييل الافتراضي</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_theme">المظهر</string>
+    <string name="settings_color">اللون الأساسي</string>
+    <string name="settings_upload_logo">تحميل الشعار</string>
+    
+    <!-- Theme -->
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="theme_system">النظام</string>
+    
+    <!-- Languages -->
+    <string name="lang_english">English</string>
+    <string name="lang_french">Français</string>
+    <string name="lang_arabic">العربية</string>
+    
+    <!-- Actions -->
+    <string name="action_save">حفظ</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_edit">تعديل</string>
+    <string name="action_duplicate">تكرار</string>
+    <string name="action_share">مشاركة</string>
+    <string name="action_download">تحميل PDF</string>
+    <string name="action_send_email">إرسال بالبريد الإلكتروني</string>
+    <string name="action_send_whatsapp">إرسال عبر واتساب</string>
+    <string name="action_preview">معاينة</string>
+    <string name="action_search">بحث</string>
+    
+    <!-- PDF -->
+    <string name="pdf_generating">جاري إنشاء PDF...</string>
+    <string name="pdf_generated">تم إنشاء PDF بنجاح</string>
+    <string name="pdf_error">خطأ في إنشاء PDF</string>
+    <string name="pdf_saved">تم حفظ PDF في التنزيلات</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_skip">تخطي</string>
+    <string name="onboarding_next">التالي</string>
+    <string name="onboarding_start">ابدأ</string>
+    <string name="onboarding_title_1">إنشاء فواتير احترافية</string>
+    <string name="onboarding_desc_1">قم بإنشاء فواتير وعروض أسعار جميلة في ثوانٍ</string>
+    <string name="onboarding_title_2">إدارة عملائك</string>
+    <string name="onboarding_desc_2">تتبع جميع عملائك وسجل فواتيرهم</string>
+    <string name="onboarding_title_3">تتبع إيراداتك</string>
+    <string name="onboarding_desc_3">راقب دخلك من خلال تحليلات مفصلة</string>
+    
+    <!-- Premium -->
+    <string name="premium_title">الترقية إلى النسخة المميزة</string>
+    <string name="premium_desc">احصل على فواتير غير محدودة وميزات متقدمة</string>
+    <string name="premium_limit">الخطة المجانية: 5 فواتير/شهر</string>
+    <string name="premium_upgrade">الترقية الآن</string>
+    
+    <!-- Validation -->
+    <string name="error_required">هذا الحقل مطلوب</string>
+    <string name="error_invalid_email">عنوان بريد إلكتروني غير صالح</string>
+    <string name="error_select_client">يرجى اختيار عميل</string>
+    <string name="error_add_items">يرجى إضافة عنصر واحد على الأقل</string>
+    
+    <!-- Messages -->
+    <string name="msg_saved">تم الحفظ بنجاح</string>
+    <string name="msg_deleted">تم الحذف بنجاح</string>
+    <string name="msg_no_data">لا توجد بيانات متاحة</string>
+    <string name="msg_confirm_delete">هل أنت متأكد من أنك تريد حذف هذا؟</string>
+    
+    <!-- Email -->
+    <string name="email_subject_invoice">فاتورة %1$s</string>
+    <string name="email_subject_quote">عرض سعر %1$s</string>
+    <string name="email_body">يرجى العثور على المستند المرفق.</string>
+</resources>
