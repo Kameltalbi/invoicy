@@ -235,6 +235,9 @@ fun MainScreen() {
                     },
                     onNavigateToSettings = {
                         navController.navigate("settings")
+                    },
+                    onNavigateToCategoryManagement = {
+                        navController.navigate("category_management")
                     }
                 )
             }
