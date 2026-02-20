@@ -116,8 +116,11 @@ class QuoteViewModel @Inject constructor(
             
             val invoiceId = invoiceRepository.insertInvoice(invoice, invoiceItems)
             
-            // Mettre à jour le statut du devis
-            val updatedQuote = quote.quote.copy(status = QuoteStatus.ACCEPTED)
+            // Mettre à jour le devis avec l'ID de la facture créée
+            val updatedQuote = quote.quote.copy(
+                status = QuoteStatus.ACCEPTED,
+                convertedToInvoiceId = invoiceId
+            )
             quoteRepository.updateQuote(updatedQuote, quote.items)
             
             Result.success(invoiceId)

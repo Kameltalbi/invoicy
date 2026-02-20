@@ -31,7 +31,8 @@ data class Quote(
     val discountType: DiscountType = DiscountType.PERCENTAGE,
     val footer: String = "",
     val createdAt: Long = System.currentTimeMillis(),
-    val pdfPath: String? = null
+    val pdfPath: String? = null,
+    val convertedToInvoiceId: Long? = null // ID de la facture créée si le devis a été converti
 )
 
 /**

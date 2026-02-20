@@ -22,7 +22,7 @@ import com.invoicy.app.data.entity.*
         InvoiceTax::class,
         QuoteTax::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

@@ -250,16 +250,19 @@ fun QuoteCard(
                         }
                     )
                     
-                    DropdownMenuItem(
-                        text = { Text("Convertir en facture") },
-                        onClick = {
-                            onConvertToInvoice()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.Receipt, contentDescription = null)
-                        }
-                    )
+                    // Afficher "Convertir en facture" seulement si pas encore converti
+                    if (quote.quote.convertedToInvoiceId == null) {
+                        DropdownMenuItem(
+                            text = { Text("Convertir en facture") },
+                            onClick = {
+                                onConvertToInvoice()
+                                showMenu = false
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Receipt, contentDescription = null)
+                            }
+                        )
+                    }
                     
                     Divider()
                     

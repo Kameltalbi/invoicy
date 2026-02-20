@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface QuoteDao {
     
     @Transaction
-    @Query("SELECT * FROM quotes ORDER BY issueDate DESC")
+    @Query("SELECT * FROM quotes WHERE convertedToInvoiceId IS NULL ORDER BY issueDate DESC")
     fun getAllQuotes(): Flow<List<QuoteWithDetails>>
     
     @Transaction
