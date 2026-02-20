@@ -31,8 +31,16 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userPreferences: UserPreferences
     
+    @Inject
+    lateinit var dataMigrationHelper: com.invoicy.app.utils.DataMigrationHelper
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Exécuter les migrations pour générer les numéros manquants
+        lifecycleScope.launch {
+            dataMigrationHelper.runMigrations()
+        }
         
         WindowCompat.setDecorFitsSystemWindows(window, false)
         

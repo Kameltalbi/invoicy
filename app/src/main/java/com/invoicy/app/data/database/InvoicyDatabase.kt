@@ -17,9 +17,12 @@ import com.invoicy.app.data.entity.*
         Quote::class,
         QuoteItem::class,
         Category::class,
-        Product::class
+        Product::class,
+        Tax::class,
+        InvoiceTax::class,
+        QuoteTax::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -32,6 +35,9 @@ abstract class InvoicyDatabase : RoomDatabase() {
     abstract fun quoteItemDao(): QuoteItemDao
     abstract fun categoryDao(): CategoryDao
     abstract fun productDao(): ProductDao
+    abstract fun taxDao(): TaxDao
+    abstract fun invoiceTaxDao(): InvoiceTaxDao
+    abstract fun quoteTaxDao(): QuoteTaxDao
     
     companion object {
         const val DATABASE_NAME = "invoicy_database"

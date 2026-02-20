@@ -64,4 +64,19 @@ object DatabaseModule {
     fun provideProductDao(database: InvoicyDatabase): ProductDao {
         return database.productDao()
     }
+    
+    @Provides
+    fun provideTaxDao(database: InvoicyDatabase): TaxDao {
+        return database.taxDao()
+    }
+    
+    @Provides
+    fun provideInvoiceTaxDao(database: InvoicyDatabase): InvoiceTaxDao {
+        return database.invoiceTaxDao()
+    }
+    
+    @Provides
+    fun provideQuoteTaxDao(database: InvoicyDatabase): QuoteTaxDao {
+        return database.quoteTaxDao()
+    }
 }

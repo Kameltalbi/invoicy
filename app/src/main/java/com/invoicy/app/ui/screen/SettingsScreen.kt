@@ -34,6 +34,7 @@ import com.invoicy.app.ui.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToTaxManagement: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val companyName by viewModel.companyName.collectAsState()
@@ -236,9 +237,18 @@ fun SettingsScreen(
                 Divider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Numérotation",
+                    text = "Numérotation & Taxes",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Taxes personnalisées",
+                    value = "Gérer les taxes",
+                    icon = Icons.Default.Percent,
+                    onClick = onNavigateToTaxManagement
                 )
             }
             

@@ -268,6 +268,16 @@ fun MainScreen() {
             // Settings
             composable("settings") {
                 SettingsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToTaxManagement = {
+                        navController.navigate("tax_management")
+                    }
+                )
+            }
+            
+            // Tax Management
+            composable("tax_management") {
+                TaxManagementScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
