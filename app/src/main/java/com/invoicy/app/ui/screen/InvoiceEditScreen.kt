@@ -33,11 +33,13 @@ fun InvoiceEditScreen(
     invoiceId: Long? = null,
     onNavigateBack: () -> Unit,
     invoiceViewModel: InvoiceViewModel = hiltViewModel(),
-    clientViewModel: ClientViewModel = hiltViewModel()
+    clientViewModel: ClientViewModel = hiltViewModel(),
+    taxViewModel: com.invoicy.app.ui.viewmodel.TaxViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     val clients by clientViewModel.clients.collectAsState()
     val uiState by invoiceViewModel.uiState.collectAsState()
+    val availableTaxes by taxViewModel.taxes.collectAsState()
     
     var invoiceNumber by remember { mutableStateOf("") }
     var selectedClient by remember { mutableStateOf<Client?>(null) }
@@ -47,8 +49,10 @@ fun InvoiceEditScreen(
     var notes by remember { mutableStateOf("") }
     var discount by remember { mutableStateOf("0") }
     var items by remember { mutableStateOf(listOf<InvoiceItemData>()) }
+    var selectedTaxes by remember { mutableStateOf(setOf<Long>()) }
     var showClientDialog by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    var showTaxDialog by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
     
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
@@ -317,6 +321,35 @@ fun InvoiceEditScreen(
                     minLines = 3
                 )
             }
+            
+            item {
+                OutlinedCard(
+                    onClick = { showTaxDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Taxes et frais",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = if (selectedTaxes.isEmpty()) "Aucune taxe sélectionnée" 
+                                       else "${selectedTaxes.size} taxe(s) appliquée(s)",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    }
+                }
+            }
         }
     }
     
@@ -341,6 +374,91 @@ fun InvoiceEditScreen(
             onDismiss = { showStatusDialog = false }
         )
     }
+    
+    if (showTaxDialog) {
+        TaxSelectionDialog(
+            availableTaxes = availableTaxes.filter { it.isActive && it.applyToInvoices },
+            selectedTaxIds = selectedTaxes,
+            onTaxesSelected = { taxes ->
+                selectedTaxes = taxes
+                showTaxDialog = false
+            },
+            onDismiss = { showTaxDialog = false }
+        )
+    }
+}
+
+@Composable
+fun TaxSelectionDialog(
+    availableTaxes: List<com.invoicy.app.data.entity.Tax>,
+    selectedTaxIds: Set<Long>,
+    onTaxesSelected: (Set<Long>) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var tempSelectedTaxes by remember { mutableStateOf(selectedTaxIds) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Default.Receipt, contentDescription = null) },
+        title = { Text("Sélectionner les taxes") },
+        text = {
+            if (availableTaxes.isEmpty()) {
+                Text("Aucune taxe disponible. Créez des taxes dans les paramètres.")
+            } else {
+                LazyColumn {
+                    items(availableTaxes.size) { index ->
+                        val tax = availableTaxes[index]
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = tempSelectedTaxes.contains(tax.id),
+                                onCheckedChange = { checked ->
+                                    tempSelectedTaxes = if (checked) {
+                                        tempSelectedTaxes + tax.id
+                                    } else {
+                                        tempSelectedTaxes - tax.id
+                                    }
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = tax.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = when (tax.type) {
+                                        com.invoicy.app.data.entity.TaxType.PERCENTAGE -> "${tax.value}%"
+                                        com.invoicy.app.data.entity.TaxType.FIXED_AMOUNT -> "${tax.value} TND"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        if (index < availableTaxes.size - 1) {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onTaxesSelected(tempSelectedTaxes) }) {
+                Text("Appliquer")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
 }
 
 @Composable

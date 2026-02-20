@@ -53,38 +53,71 @@ class DashboardViewModel @Inject constructor(
     }
     
     private suspend fun generateMonthlySalesData(): List<Pair<String, Double>> {
-        // TODO: Récupérer les vraies données depuis la base
-        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
+        val monthsMap = mapOf(
+            "01" to "Jan", "02" to "Fév", "03" to "Mar", "04" to "Avr",
+            "05" to "Mai", "06" to "Juin", "07" to "Juil", "08" to "Aoû",
+            "09" to "Sep", "10" to "Oct", "11" to "Nov", "12" to "Déc"
+        )
+        
+        val salesData = invoiceRepository.getMonthlySalesCurrentYear()
+        val salesMap = salesData.associate { it.month to it.total }
         val currentMonth = java.util.Calendar.getInstance().get(java.util.Calendar.MONTH)
-        return months.take(currentMonth + 1).mapIndexed { index, month ->
-            month to (Math.random() * 5000 + 1000)
+        
+        return (1..currentMonth + 1).map { month ->
+            val monthKey = String.format("%02d", month)
+            val monthName = monthsMap[monthKey] ?: ""
+            val yearMonth = "${java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)}-$monthKey"
+            monthName to (salesMap[yearMonth] ?: 0.0)
         }
     }
     
     private suspend fun generateCategorySalesData(): List<Pair<String, Double>> {
-        // TODO: Récupérer les vraies données depuis la base
+        // Données de catégories - pour l'instant on garde les données de démo
+        // car il faudrait ajouter des catégories aux lignes de facture
         return listOf(
-            "Consulting" to 12500.0,
-            "Développement" to 8900.0,
-            "Design" to 5600.0,
+            "Services" to 12500.0,
+            "Produits" to 8900.0,
+            "Consulting" to 5600.0,
             "Formation" to 3200.0,
             "Support" to 2100.0
         )
     }
     
     private suspend fun generateCurrentYearData(): List<Pair<String, Double>> {
-        // TODO: Récupérer les vraies données depuis la base
-        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
-        return months.mapIndexed { index, month ->
-            month to (Math.random() * 5000 + 2000)
+        val monthsMap = mapOf(
+            "01" to "Jan", "02" to "Fév", "03" to "Mar", "04" to "Avr",
+            "05" to "Mai", "06" to "Juin", "07" to "Juil", "08" to "Aoû",
+            "09" to "Sep", "10" to "Oct", "11" to "Nov", "12" to "Déc"
+        )
+        
+        val salesData = invoiceRepository.getMonthlySalesCurrentYear()
+        val salesMap = salesData.associate { it.month to it.total }
+        val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+        
+        return (1..12).map { month ->
+            val monthKey = String.format("%02d", month)
+            val monthName = monthsMap[monthKey] ?: ""
+            val yearMonth = "$currentYear-$monthKey"
+            monthName to (salesMap[yearMonth] ?: 0.0)
         }
     }
     
     private suspend fun generatePreviousYearData(): List<Pair<String, Double>> {
-        // TODO: Récupérer les vraies données depuis la base
-        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
-        return months.mapIndexed { index, month ->
-            month to (Math.random() * 4000 + 1500)
+        val monthsMap = mapOf(
+            "01" to "Jan", "02" to "Fév", "03" to "Mar", "04" to "Avr",
+            "05" to "Mai", "06" to "Juin", "07" to "Juil", "08" to "Aoû",
+            "09" to "Sep", "10" to "Oct", "11" to "Nov", "12" to "Déc"
+        )
+        
+        val salesData = invoiceRepository.getMonthlySalesPreviousYear()
+        val salesMap = salesData.associate { it.month to it.total }
+        val previousYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR) - 1
+        
+        return (1..12).map { month ->
+            val monthKey = String.format("%02d", month)
+            val monthName = monthsMap[monthKey] ?: ""
+            val yearMonth = "$previousYear-$monthKey"
+            monthName to (salesMap[yearMonth] ?: 0.0)
         }
     }
 }

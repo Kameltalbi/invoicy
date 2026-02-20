@@ -50,6 +50,26 @@ interface InvoiceDao {
     @Query("SELECT COUNT(*) FROM invoices WHERE status = :status")
     fun getInvoiceCountByStatus(status: InvoiceStatus): Flow<Int>
     
+    @Query("""
+        SELECT strftime('%Y-%m', issueDate/1000, 'unixepoch') as month, 
+               COALESCE(SUM((SELECT SUM(quantity * unitPrice * (1 + vatRate/100)) FROM invoice_items WHERE invoiceId = invoices.id)), 0) as total
+        FROM invoices 
+        WHERE strftime('%Y', issueDate/1000, 'unixepoch') = strftime('%Y', 'now')
+        GROUP BY month
+        ORDER BY month
+    """)
+    suspend fun getMonthlySalesCurrentYear(): List<com.invoicy.app.data.entity.MonthlySales>
+    
+    @Query("""
+        SELECT strftime('%Y-%m', issueDate/1000, 'unixepoch') as month,
+               COALESCE(SUM((SELECT SUM(quantity * unitPrice * (1 + vatRate/100)) FROM invoice_items WHERE invoiceId = invoices.id)), 0) as total
+        FROM invoices
+        WHERE strftime('%Y', issueDate/1000, 'unixepoch') = strftime('%Y', 'now', '-1 year')
+        GROUP BY month
+        ORDER BY month
+    """)
+    suspend fun getMonthlySalesPreviousYear(): List<com.invoicy.app.data.entity.MonthlySales>
+    
     @Query("SELECT number FROM invoices ORDER BY createdAt DESC LIMIT 1")
     suspend fun getLastInvoiceNumber(): String?
     

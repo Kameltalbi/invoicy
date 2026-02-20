@@ -90,6 +90,14 @@ class InvoiceRepository @Inject constructor(
         return numberingService.generateInvoiceNumber()
     }
     
+    suspend fun getMonthlySalesCurrentYear(): List<com.invoicy.app.data.entity.MonthlySales> {
+        return invoiceDao.getMonthlySalesCurrentYear()
+    }
+    
+    suspend fun getMonthlySalesPreviousYear(): List<com.invoicy.app.data.entity.MonthlySales> {
+        return invoiceDao.getMonthlySalesPreviousYear()
+    }
+    
     fun getInvoiceCountByStatus(status: InvoiceStatus): Flow<Int> = 
         invoiceDao.getInvoiceCountByStatus(status)
     
