@@ -36,7 +36,7 @@ class SettingsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     
     val currency: StateFlow<String> = userPreferences.currency
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "EUR")
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "TND")
     
     val defaultFooter: StateFlow<String> = userPreferences.defaultFooter
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
