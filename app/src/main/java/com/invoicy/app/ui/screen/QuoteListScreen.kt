@@ -68,6 +68,7 @@ fun QuoteListScreen(
             item {
                 com.invoicy.app.ui.components.DocumentHeader(
                     title = "Devis",
+                    buttonText = "Devis",
                     onAddClick = onNavigateToNewQuote,
                     onSearchClick = { /* TODO */ },
                     onFilterClick = { /* TODO */ }

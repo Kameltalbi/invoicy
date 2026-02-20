@@ -58,8 +58,8 @@ private fun MiniSummaryCard(
 ) {
     Card(
         modifier = Modifier
-            .width(140.dp)
-            .height(90.dp),
+            .width(110.dp)
+            .height(80.dp),
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.08f)
         )
@@ -67,7 +67,7 @@ private fun MiniSummaryCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(10.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -84,16 +84,17 @@ private fun MiniSummaryCard(
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = color.copy(alpha = 0.7f)
+                    tint = color,
+                    modifier = Modifier.size(16.dp)
                 )
             }
             
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
-                color = color
+                color = color,
+                maxLines = 1
             )
         }
     }
@@ -209,6 +210,7 @@ fun getQuoteStatusText(status: QuoteStatus): String {
 @Composable
 fun DocumentHeader(
     title: String,
+    buttonText: String = "Nouveau",
     onAddClick: () -> Unit,
     onSearchClick: () -> Unit,
     onFilterClick: () -> Unit,
@@ -244,7 +246,7 @@ fun DocumentHeader(
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Nouveau")
+                Text(buttonText)
             }
         }
     }

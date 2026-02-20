@@ -68,6 +68,7 @@ fun InvoiceListScreen(
             item {
                 com.invoicy.app.ui.components.DocumentHeader(
                     title = "Factures",
+                    buttonText = "Facture",
                     onAddClick = {
                         viewModel.createNewInvoice()
                         onNavigateToNewInvoice()
