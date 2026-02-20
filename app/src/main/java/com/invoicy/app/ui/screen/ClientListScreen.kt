@@ -28,6 +28,7 @@ fun ClientListScreen(
     onNavigateBack: () -> Unit,
     onNavigateToClient: (Long) -> Unit,
     onNavigateToNewClient: () -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     viewModel: ClientViewModel = hiltViewModel()
 ) {
     val clients by viewModel.clients.collectAsState()
@@ -40,6 +41,11 @@ fun ClientListScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
                     }
                 }
             )

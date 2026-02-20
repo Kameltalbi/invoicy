@@ -89,6 +89,9 @@ fun MainScreen() {
                     },
                     onNavigateToNewInvoice = {
                         navController.navigate("invoice_new")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
                     }
                 )
             }
@@ -103,6 +106,9 @@ fun MainScreen() {
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToEdit = { id ->
                         navController.navigate("invoice_edit/$id")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
                     }
                 )
             }
@@ -134,6 +140,9 @@ fun MainScreen() {
                     },
                     onNavigateToNewQuote = {
                         navController.navigate("quote_new")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
                     }
                 )
             }
@@ -148,6 +157,9 @@ fun MainScreen() {
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToEdit = { id ->
                         navController.navigate("quote_edit/$id")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
                     }
                 )
             }
@@ -179,6 +191,9 @@ fun MainScreen() {
                     },
                     onNavigateToNewClient = {
                         navController.navigate("client_new")
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate("settings")
                     }
                 )
             }

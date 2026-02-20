@@ -29,6 +29,7 @@ fun QuoteDetailScreen(
     quoteId: Long,
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     viewModel: QuoteViewModel = hiltViewModel(),
     settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
@@ -66,6 +67,9 @@ fun QuoteDetailScreen(
                     }
                     IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
                     }
                 }
             )

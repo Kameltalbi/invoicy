@@ -31,6 +31,7 @@ fun InvoiceListScreen(
     onNavigateBack: () -> Unit,
     onNavigateToInvoice: (Long) -> Unit,
     onNavigateToNewInvoice: () -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     viewModel: InvoiceViewModel = hiltViewModel(),
     settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
@@ -45,6 +46,11 @@ fun InvoiceListScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
                     }
                 }
             )

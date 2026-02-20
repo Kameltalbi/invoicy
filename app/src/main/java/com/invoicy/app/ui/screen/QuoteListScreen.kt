@@ -30,6 +30,7 @@ fun QuoteListScreen(
     onNavigateBack: () -> Unit,
     onNavigateToQuote: (Long) -> Unit,
     onNavigateToNewQuote: () -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     viewModel: QuoteViewModel = hiltViewModel(),
     settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
@@ -45,6 +46,11 @@ fun QuoteListScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
                     }
                 }
             )

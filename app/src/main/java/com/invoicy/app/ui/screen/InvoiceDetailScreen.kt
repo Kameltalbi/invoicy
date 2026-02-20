@@ -29,6 +29,7 @@ fun InvoiceDetailScreen(
     invoiceId: Long,
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
+    onNavigateToSettings: () -> Unit = {},
     viewModel: InvoiceViewModel = hiltViewModel(),
     settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
@@ -66,6 +67,9 @@ fun InvoiceDetailScreen(
                     }
                     IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(Icons.Default.Delete, contentDescription = "Delete")
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
                     }
                 }
             )
