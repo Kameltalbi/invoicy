@@ -29,10 +29,12 @@ fun InvoiceDetailScreen(
     invoiceId: Long,
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
-    viewModel: InvoiceViewModel = hiltViewModel()
+    viewModel: InvoiceViewModel = hiltViewModel(),
+    settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     var invoice by remember { mutableStateOf<com.invoicy.app.data.entity.InvoiceWithDetails?>(null) }
+    val currency by settingsViewModel.currency.collectAsState()
     
     LaunchedEffect(invoiceId) {
         viewModel.loadInvoice(invoiceId)
@@ -159,7 +161,7 @@ fun InvoiceDetailScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = "${item.quantity} × ${item.unitPrice} €",
+                                    text = "${item.quantity} × ${com.invoicy.app.utils.CurrencyFormatter.format(item.unitPrice, currency)}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
@@ -168,7 +170,7 @@ fun InvoiceDetailScreen(
                                 )
                             }
                             Text(
-                                text = "${item.getTotal()} €",
+                                text = com.invoicy.app.utils.CurrencyFormatter.format(item.getTotal(), currency),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -193,14 +195,14 @@ fun InvoiceDetailScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(stringResource(R.string.subtotal))
-                                Text("${invoiceData.getSubtotal()} €")
+                                Text(com.invoicy.app.utils.CurrencyFormatter.format(invoiceData.getSubtotal(), currency))
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(stringResource(R.string.vat_total))
-                                Text("${invoiceData.getVatTotal()} €")
+                                Text(com.invoicy.app.utils.CurrencyFormatter.format(invoiceData.getVatTotal(), currency))
                             }
                             if (invoiceData.invoice.discount > 0) {
                                 Row(
@@ -208,7 +210,7 @@ fun InvoiceDetailScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(stringResource(R.string.invoice_discount))
-                                    Text("-${invoiceData.getDiscountAmount()} €")
+                                    Text("-${com.invoicy.app.utils.CurrencyFormatter.format(invoiceData.getDiscountAmount(), currency)}")
                                 }
                             }
                             Divider()
@@ -222,7 +224,7 @@ fun InvoiceDetailScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "${invoiceData.getTotal()} €",
+                                    text = com.invoicy.app.utils.CurrencyFormatter.format(invoiceData.getTotal(), currency),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary

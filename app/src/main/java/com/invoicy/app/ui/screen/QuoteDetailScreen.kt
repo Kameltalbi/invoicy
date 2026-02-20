@@ -29,10 +29,12 @@ fun QuoteDetailScreen(
     quoteId: Long,
     onNavigateBack: () -> Unit,
     onNavigateToEdit: (Long) -> Unit,
-    viewModel: QuoteViewModel = hiltViewModel()
+    viewModel: QuoteViewModel = hiltViewModel(),
+    settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val scope = rememberCoroutineScope()
     var quote by remember { mutableStateOf<com.invoicy.app.data.entity.QuoteWithDetails?>(null) }
+    val currency by settingsViewModel.currency.collectAsState()
     
     LaunchedEffect(quoteId) {
         viewModel.loadQuote(quoteId)
@@ -170,9 +172,9 @@ fun QuoteDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("${item.quantity} × ${item.unitPrice} €")
+                                Text("${item.quantity} × ${com.invoicy.app.utils.CurrencyFormatter.format(item.unitPrice, currency)}")
                                 Text(
-                                    text = "${item.getTotal()} €",
+                                    text = com.invoicy.app.utils.CurrencyFormatter.format(item.getTotal(), currency),
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -204,14 +206,14 @@ fun QuoteDetailScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Sous-total HT")
-                                Text("${quoteData.getSubtotal()} €")
+                                Text(com.invoicy.app.utils.CurrencyFormatter.format(quoteData.getSubtotal(), currency))
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("TVA")
-                                Text("${quoteData.getVatTotal()} €")
+                                Text(com.invoicy.app.utils.CurrencyFormatter.format(quoteData.getVatTotal(), currency))
                             }
                             if (quoteData.quote.discount > 0) {
                                 Row(
@@ -219,7 +221,7 @@ fun QuoteDetailScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text("Remise")
-                                    Text("-${quoteData.getDiscountAmount()} €")
+                                    Text("-${com.invoicy.app.utils.CurrencyFormatter.format(quoteData.getDiscountAmount(), currency)}")
                                 }
                             }
                             Divider()
@@ -233,7 +235,7 @@ fun QuoteDetailScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = "${quoteData.getTotal()} €",
+                                    text = com.invoicy.app.utils.CurrencyFormatter.format(quoteData.getTotal(), currency),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
