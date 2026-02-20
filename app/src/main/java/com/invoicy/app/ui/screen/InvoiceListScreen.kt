@@ -2,6 +2,8 @@
 
 package com.invoicy.app.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,11 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.invoicy.app.R
 import com.invoicy.app.data.entity.InvoiceStatus
 import com.invoicy.app.data.entity.InvoiceWithDetails
 import com.invoicy.app.ui.viewmodel.InvoiceViewModel
@@ -23,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Écran de la liste des factures
+ * Écran optimisé de la liste des factures
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,79 +39,123 @@ fun InvoiceListScreen(
     val invoices by viewModel.invoices.collectAsState()
     var invoiceToDelete by remember { mutableStateOf<InvoiceWithDetails?>(null) }
     val currency by settingsViewModel.currency.collectAsState()
+    var selectedFilter by remember { mutableStateOf("Toutes") }
     
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.invoices_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Default.Settings, contentDescription = "Paramètres")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.createNewInvoice()
-                    onNavigateToNewInvoice()
-                }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "New Invoice")
+    // Calculs pour la barre de résumé
+    val totalInvoiced = invoices.sumOf { it.getTotal() }
+    val totalPaid = invoices.filter { it.invoice.status == InvoiceStatus.PAID }.sumOf { it.getTotal() }
+    val unpaidCount = invoices.count { it.invoice.status == InvoiceStatus.SENT }
+    val overdueCount = invoices.count { it.invoice.status == InvoiceStatus.OVERDUE }
+    
+    // Filtrage
+    val filteredInvoices = when (selectedFilter) {
+        "Brouillon" -> invoices.filter { it.invoice.status == InvoiceStatus.DRAFT }
+        "Envoyées" -> invoices.filter { it.invoice.status == InvoiceStatus.SENT }
+        "Payées" -> invoices.filter { it.invoice.status == InvoiceStatus.PAID }
+        "Impayées" -> invoices.filter { it.invoice.status == InvoiceStatus.SENT }
+        "En retard" -> invoices.filter { it.invoice.status == InvoiceStatus.OVERDUE }
+        else -> invoices
+    }
+    
+    Scaffold { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF8F9FA))
+                .padding(paddingValues)
+        ) {
+            // Header
+            item {
+                com.invoicy.app.ui.components.DocumentHeader(
+                    title = "Factures",
+                    onAddClick = {
+                        viewModel.createNewInvoice()
+                        onNavigateToNewInvoice()
+                    },
+                    onSearchClick = { /* TODO */ },
+                    onFilterClick = { /* TODO */ }
+                )
             }
-        }
-    ) { paddingValues ->
-        if (invoices.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Receipt,
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+            
+            // Barre de résumé
+            item {
+                com.invoicy.app.ui.components.DocumentSummaryBar(
+                    stats = listOf(
+                        com.invoicy.app.ui.components.SummaryStatItem(
+                            title = "Total facturé",
+                            value = com.invoicy.app.utils.CurrencyFormatter.format(totalInvoiced, currency),
+                            icon = Icons.Default.AttachMoney,
+                            color = Color(0xFF2D6CDF)
+                        ),
+                        com.invoicy.app.ui.components.SummaryStatItem(
+                            title = "Total encaissé",
+                            value = com.invoicy.app.utils.CurrencyFormatter.format(totalPaid, currency),
+                            icon = Icons.Default.CheckCircle,
+                            color = Color(0xFF16A34A)
+                        ),
+                        com.invoicy.app.ui.components.SummaryStatItem(
+                            title = "Impayées",
+                            value = unpaidCount.toString(),
+                            icon = Icons.Default.Schedule,
+                            color = Color(0xFFF59E0B)
+                        ),
+                        com.invoicy.app.ui.components.SummaryStatItem(
+                            title = "En retard",
+                            value = overdueCount.toString(),
+                            icon = Icons.Default.Warning,
+                            color = Color(0xFFDC2626)
+                        )
                     )
-                    Text(
-                        text = stringResource(R.string.msg_no_data),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
+                )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(invoices, key = { it.invoice.id }) { invoice ->
-                    InvoiceCard(
+            
+            // Filtres rapides
+            item {
+                com.invoicy.app.ui.components.StatusFilterChips(
+                    filters = listOf("Toutes", "Brouillon", "Envoyées", "Payées", "Impayées", "En retard"),
+                    selectedFilter = selectedFilter,
+                    onFilterSelected = { selectedFilter = it }
+                )
+            }
+            
+            // État vide
+            if (filteredInvoices.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(300.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Receipt,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                            )
+                            Text(
+                                text = "Aucune facture",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
+            } else {
+                // Liste des factures
+                items(filteredInvoices, key = { it.invoice.id }) { invoice ->
+                    CompactInvoiceCard(
                         invoice = invoice,
                         currency = currency,
                         onClick = { onNavigateToInvoice(invoice.invoice.id) },
-                        onEdit = { onNavigateToInvoice(invoice.invoice.id) },
                         onDelete = { invoiceToDelete = invoice },
-                        onDuplicate = { viewModel.duplicateInvoice(invoice.invoice.id) },
                         onMarkPaid = { 
                             viewModel.updateInvoiceStatus(invoice.invoice.id, InvoiceStatus.PAID)
-                        },
-                        onDownloadPdf = { /* TODO: Implement download */ }
+                        }
                     )
                 }
             }
@@ -143,180 +188,130 @@ fun InvoiceListScreen(
 }
 
 @Composable
-fun InvoiceCard(
+fun CompactInvoiceCard(
     invoice: InvoiceWithDetails,
     currency: String,
     onClick: () -> Unit,
-    onEdit: () -> Unit,
     onDelete: () -> Unit,
-    onDuplicate: () -> Unit,
-    onMarkPaid: () -> Unit,
-    onDownloadPdf: () -> Unit
+    onMarkPaid: () -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
     var showMenu by remember { mutableStateOf(false) }
     
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                // Ligne principale : Numéro + Client
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = invoice.invoice.number,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    InvoiceStatusChip(status = invoice.invoice.status)
+                    Column {
+                        Text(
+                            text = invoice.invoice.number,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = invoice.client.name,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
                 }
                 
-                Text(
-                    text = invoice.client.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
-                
+                // Ligne secondaire : Dates + Badge
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = dateFormat.format(Date(invoice.invoice.issueDate)),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = com.invoicy.app.utils.CurrencyFormatter.format(invoice.getTotal(), currency),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "Émise: ${dateFormat.format(Date(invoice.invoice.issueDate))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                        Text(
+                            text = "Échéance: ${dateFormat.format(Date(invoice.invoice.dueDate))}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
+                    
+                    com.invoicy.app.ui.components.StatusBadge(
+                        status = com.invoicy.app.ui.components.getInvoiceStatusText(invoice.invoice.status),
+                        color = com.invoicy.app.ui.components.getInvoiceStatusColor(invoice.invoice.status)
                     )
                 }
             }
             
-            Box {
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "Actions")
-                }
+            // Montant + Menu
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = com.invoicy.app.utils.CurrencyFormatter.format(invoice.getTotal(), currency),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = com.invoicy.app.ui.components.getInvoiceStatusColor(invoice.invoice.status)
+                )
                 
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Voir") },
-                        onClick = {
-                            onClick()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.Visibility, contentDescription = null)
-                        }
-                    )
+                Box {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Actions")
+                    }
                     
-                    DropdownMenuItem(
-                        text = { Text("Modifier") },
-                        onClick = {
-                            onEdit()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.Edit, contentDescription = null)
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        if (invoice.invoice.status != InvoiceStatus.PAID) {
+                            DropdownMenuItem(
+                                text = { Text("Marquer payée") },
+                                onClick = {
+                                    onMarkPaid()
+                                    showMenu = false
+                                },
+                                leadingIcon = { Icon(Icons.Default.CheckCircle, contentDescription = null) }
+                            )
                         }
-                    )
-                    
-                    DropdownMenuItem(
-                        text = { Text("Dupliquer") },
-                        onClick = {
-                            onDuplicate()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.ContentCopy, contentDescription = null)
-                        }
-                    )
-                    
-                    if (invoice.invoice.status != InvoiceStatus.PAID) {
                         DropdownMenuItem(
-                            text = { Text("Marquer payée") },
+                            text = { Text("Supprimer") },
                             onClick = {
-                                onMarkPaid()
+                                onDelete()
                                 showMenu = false
                             },
-                            leadingIcon = {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null)
+                            leadingIcon = { 
+                                Icon(
+                                    Icons.Default.Delete, 
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                ) 
                             }
                         )
                     }
-                    
-                    DropdownMenuItem(
-                        text = { Text("Télécharger PDF") },
-                        onClick = {
-                            onDownloadPdf()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(Icons.Default.Download, contentDescription = null)
-                        }
-                    )
-                    
-                    Divider()
-                    
-                    DropdownMenuItem(
-                        text = { Text("Supprimer") },
-                        onClick = {
-                            onDelete()
-                            showMenu = false
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        colors = MenuDefaults.itemColors(
-                            textColor = MaterialTheme.colorScheme.error
-                        )
-                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun InvoiceStatusChip(status: InvoiceStatus) {
-    val (text, color) = when (status) {
-        InvoiceStatus.DRAFT -> stringResource(R.string.status_draft) to MaterialTheme.colorScheme.outline
-        InvoiceStatus.SENT -> stringResource(R.string.status_sent) to MaterialTheme.colorScheme.primary
-        InvoiceStatus.PAID -> stringResource(R.string.status_paid) to MaterialTheme.colorScheme.tertiary
-        InvoiceStatus.OVERDUE -> stringResource(R.string.status_overdue) to MaterialTheme.colorScheme.error
-    }
-    
-    Surface(
-        shape = MaterialTheme.shapes.small,
-        color = color.copy(alpha = 0.1f)
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = color
-        )
     }
 }
