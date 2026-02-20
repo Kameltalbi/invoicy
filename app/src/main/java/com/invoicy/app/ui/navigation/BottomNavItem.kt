@@ -15,7 +15,7 @@ sealed class BottomNavItem(
     object Dashboard : BottomNavItem(
         route = "dashboard",
         icon = Icons.Default.Dashboard,
-        label = "Dashboard"
+        label = "Accueil"
     )
     
     object Invoices : BottomNavItem(
