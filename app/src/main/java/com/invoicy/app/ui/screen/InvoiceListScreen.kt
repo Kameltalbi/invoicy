@@ -83,25 +83,25 @@ fun InvoiceListScreen(
                 com.invoicy.app.ui.components.DocumentSummaryBar(
                     stats = listOf(
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Total facturé",
+                            title = "Facturé",
                             value = com.invoicy.app.utils.CurrencyFormatter.format(totalInvoiced, currency),
                             icon = Icons.Default.AttachMoney,
                             color = Color(0xFF2D6CDF)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Total encaissé",
+                            title = "Encaissé",
                             value = com.invoicy.app.utils.CurrencyFormatter.format(totalPaid, currency),
                             icon = Icons.Default.CheckCircle,
                             color = Color(0xFF16A34A)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Impayées",
+                            title = "Impayé",
                             value = unpaidCount.toString(),
                             icon = Icons.Default.Schedule,
                             color = Color(0xFFF59E0B)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "En retard",
+                            title = "Retard",
                             value = overdueCount.toString(),
                             icon = Icons.Default.Warning,
                             color = Color(0xFFDC2626)

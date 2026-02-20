@@ -80,25 +80,25 @@ fun QuoteListScreen(
                 com.invoicy.app.ui.components.DocumentSummaryBar(
                     stats = listOf(
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Total devis",
+                            title = "Devis",
                             value = totalQuotes.toString(),
                             icon = Icons.Default.Description,
                             color = Color(0xFF2D6CDF)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Montant total",
+                            title = "Montant",
                             value = com.invoicy.app.utils.CurrencyFormatter.format(totalAmount, currency),
                             icon = Icons.Default.AttachMoney,
                             color = Color(0xFF8B5CF6)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "Acceptés",
+                            title = "Accepté",
                             value = acceptedCount.toString(),
                             icon = Icons.Default.CheckCircle,
                             color = Color(0xFF16A34A)
                         ),
                         com.invoicy.app.ui.components.SummaryStatItem(
-                            title = "En attente",
+                            title = "Attente",
                             value = pendingCount.toString(),
                             icon = Icons.Default.Schedule,
                             color = Color(0xFFF59E0B)

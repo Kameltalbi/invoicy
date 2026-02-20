@@ -236,9 +236,13 @@ fun DocumentHeader(
             IconButton(onClick = onFilterClick) {
                 Icon(Icons.Default.FilterList, contentDescription = "Filtrer")
             }
-            FilledTonalButton(
+            Button(
                 onClick = onAddClick,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Icon(
                     Icons.Default.Add,
@@ -246,7 +250,7 @@ fun DocumentHeader(
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(buttonText)
+                Text(buttonText, fontWeight = FontWeight.SemiBold)
             }
         }
     }
