@@ -56,7 +56,7 @@ fun SettingsScreen(
     var showInvoiceNumberingDialog by remember { mutableStateOf(false) }
     var showQuoteNumberingDialog by remember { mutableStateOf(false) }
     var showPdfTemplateDialog by remember { mutableStateOf(false) }
-    var pdfTemplate by remember { mutableStateOf("classic") }
+    val pdfTemplate by viewModel.pdfTemplate.collectAsState(initial = "classic")
     
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -408,7 +408,7 @@ fun SettingsScreen(
             currentTemplate = pdfTemplate,
             onDismiss = { showPdfTemplateDialog = false },
             onTemplateSelected = { template ->
-                pdfTemplate = template
+                viewModel.updatePdfTemplate(template)
                 showPdfTemplateDialog = false
             }
         )

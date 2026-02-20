@@ -65,6 +65,9 @@ class SettingsViewModel @Inject constructor(
     val quoteYearReset: StateFlow<Boolean> = userPreferences.quoteYearReset
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
     
+    val quoteCounter = userPreferences.quoteCounter
+    val pdfTemplate = userPreferences.pdfTemplate
+    
     fun updateCompanyName(value: String) {
         viewModelScope.launch {
             userPreferences.setCompanyName(value)
@@ -148,6 +151,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferences.setQuotePrefix(prefix)
             userPreferences.setQuoteYearReset(yearReset)
+        }
+    }
+    
+    fun updatePdfTemplate(value: String) {
+        viewModelScope.launch {
+            userPreferences.setPdfTemplate(value)
         }
     }
 }

@@ -22,6 +22,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/kameltalbi/invoicy-release-key.jks")
+            storePassword = "invoicy123"
+            keyAlias = "invoicy"
+            keyPassword = "invoicy123"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -29,6 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

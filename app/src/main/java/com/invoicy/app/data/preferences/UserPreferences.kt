@@ -76,6 +76,7 @@ class UserPreferences @Inject constructor(
     val quoteYearReset: Flow<Boolean> = dataStore.data.map { it[QUOTE_YEAR_RESET] ?: true }
     val quoteLastYear: Flow<Int> = dataStore.data.map { it[QUOTE_LAST_YEAR] ?: 0 }
     val quoteCounter: Flow<Int> = dataStore.data.map { it[QUOTE_COUNTER] ?: 0 }
+    val pdfTemplate: Flow<String> = dataStore.data.map { it[PDF_TEMPLATE] ?: "classic" }
     
     suspend fun setCompanyName(value: String) {
         dataStore.edit { it[COMPANY_NAME] = value }
@@ -166,5 +167,9 @@ class UserPreferences @Inject constructor(
     
     suspend fun setQuoteCounter(value: Int) {
         dataStore.edit { it[QUOTE_COUNTER] = value }
+    }
+    
+    suspend fun setPdfTemplate(value: String) {
+        dataStore.edit { it[PDF_TEMPLATE] = value }
     }
 }

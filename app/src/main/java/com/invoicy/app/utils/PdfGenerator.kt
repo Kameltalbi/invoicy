@@ -46,7 +46,8 @@ class PdfGenerator @Inject constructor(
         taxNumber: String,
         logoUri: String?,
         currency: String,
-        footer: String
+        footer: String,
+        template: String = "classic"
     ): File {
         val fileName = "invoice_${invoice.invoice.number}_${System.currentTimeMillis()}.pdf"
         val file = File(context.filesDir, "invoices/$fileName")
@@ -57,8 +58,12 @@ class PdfGenerator @Inject constructor(
         val document = Document(pdfDoc, PageSize.A4)
         document.setMargins(40f, 40f, 40f, 40f)
         
-        // Couleur principale
-        val primaryColor = DeviceRgb(98, 0, 238)
+        // Couleur principale selon le template
+        val primaryColor = when (template) {
+            "modern" -> DeviceRgb(45, 108, 223) // Bleu moderne
+            "minimal" -> DeviceRgb(0, 0, 0) // Noir
+            else -> DeviceRgb(30, 58, 138) // Bleu classique
+        }
         
         // En-tête avec logo et infos émetteur
         addHeader(document, companyName, email, phone, address, taxNumber, logoUri, primaryColor)
@@ -138,6 +143,12 @@ class PdfGenerator @Inject constructor(
         totalsTable.addCell(createCell("TVA:", true))
         totalsTable.addCell(createCell(formatCurrency(invoice.getVatTotal(), currency), false))
         
+        // Taxes et frais supplémentaires
+        if (invoice.getCustomTaxesTotal() > 0) {
+            totalsTable.addCell(createCell("Taxes et frais:", true))
+            totalsTable.addCell(createCell(formatCurrency(invoice.getCustomTaxesTotal(), currency), false))
+        }
+        
         totalsTable.addCell(createCell("Total TTC:", true).setBold().setFontSize(12f))
         totalsTable.addCell(createCell(formatCurrency(invoice.getTotal(), currency), false).setBold().setFontSize(12f))
         
@@ -175,7 +186,8 @@ class PdfGenerator @Inject constructor(
         taxNumber: String,
         logoUri: String?,
         currency: String,
-        footer: String
+        footer: String,
+        template: String = "classic"
     ): File {
         val fileName = "quote_${quote.quote.number}_${System.currentTimeMillis()}.pdf"
         val file = File(context.filesDir, "quotes/$fileName")
@@ -186,7 +198,12 @@ class PdfGenerator @Inject constructor(
         val document = Document(pdfDoc, PageSize.A4)
         document.setMargins(40f, 40f, 40f, 40f)
         
-        val primaryColor = DeviceRgb(98, 0, 238)
+        // Couleur principale selon le template
+        val primaryColor = when (template) {
+            "modern" -> DeviceRgb(45, 108, 223) // Bleu moderne
+            "minimal" -> DeviceRgb(0, 0, 0) // Noir
+            else -> DeviceRgb(30, 58, 138) // Bleu classique
+        }
         
         addHeader(document, companyName, email, phone, address, taxNumber, logoUri, primaryColor)
         
@@ -257,6 +274,12 @@ class PdfGenerator @Inject constructor(
         
         totalsTable.addCell(createCell("TVA:", true))
         totalsTable.addCell(createCell(formatCurrency(quote.getVatTotal(), currency), false))
+        
+        // Taxes et frais supplémentaires
+        if (quote.getCustomTaxesTotal() > 0) {
+            totalsTable.addCell(createCell("Taxes et frais:", true))
+            totalsTable.addCell(createCell(formatCurrency(quote.getCustomTaxesTotal(), currency), false))
+        }
         
         totalsTable.addCell(createCell("Total TTC:", true).setBold().setFontSize(12f))
         totalsTable.addCell(createCell(formatCurrency(quote.getTotal(), currency), false).setBold().setFontSize(12f))

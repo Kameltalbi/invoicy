@@ -106,9 +106,10 @@ class InvoiceViewModel @Inject constructor(
             val logoUri = userPreferences.logoUri.first()
             val currency = userPreferences.currency.first()
             val footer = userPreferences.defaultFooter.first()
+            val template = userPreferences.pdfTemplate.first()
             
             val file = pdfGenerator.generateInvoicePdf(
-                invoice, companyName, email, phone, address, taxNumber, logoUri, currency, footer
+                invoice, companyName, email, phone, address, taxNumber, logoUri, currency, footer, template
             )
             
             // Mettre à jour le chemin du PDF dans la facture

@@ -142,9 +142,10 @@ class QuoteViewModel @Inject constructor(
             val logoUri = userPreferences.logoUri.first()
             val currency = userPreferences.currency.first()
             val footer = userPreferences.defaultFooter.first()
+            val template = userPreferences.pdfTemplate.first()
             
             val file = pdfGenerator.generateQuotePdf(
-                quote, companyName, email, phone, address, taxNumber, logoUri, currency, footer
+                quote, companyName, email, phone, address, taxNumber, logoUri, currency, footer, template
             )
             
             val updatedQuote = quote.quote.copy(pdfPath = file.absolutePath)
