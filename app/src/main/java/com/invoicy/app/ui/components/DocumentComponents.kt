@@ -24,20 +24,24 @@ fun DocumentSummaryBar(
     modifier: Modifier = Modifier,
     stats: List<SummaryStatItem>
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        stats.forEach { stat ->
-            MiniSummaryCard(
-                title = stat.title,
-                value = stat.value,
-                icon = stat.icon,
-                color = stat.color
-            )
+        Row(
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            stats.forEach { stat ->
+                MiniSummaryCard(
+                    title = stat.title,
+                    value = stat.value,
+                    icon = stat.icon,
+                    color = stat.color
+                )
+            }
         }
     }
 }
@@ -58,8 +62,8 @@ private fun MiniSummaryCard(
 ) {
     Card(
         modifier = Modifier
-            .width(110.dp)
-            .height(80.dp),
+            .width(85.dp)
+            .height(75.dp),
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.08f)
         )
@@ -67,7 +71,7 @@ private fun MiniSummaryCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp),
+                .padding(8.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
@@ -85,7 +89,7 @@ private fun MiniSummaryCard(
                     imageVector = icon,
                     contentDescription = null,
                     tint = color,
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(14.dp)
                 )
             }
             
