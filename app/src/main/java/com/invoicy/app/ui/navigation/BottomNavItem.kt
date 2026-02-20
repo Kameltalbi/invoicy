@@ -20,7 +20,7 @@ sealed class BottomNavItem(
     
     object Invoices : BottomNavItem(
         route = "invoices",
-        icon = Icons.Default.Receipt,
+        icon = Icons.Default.ReceiptLong,
         label = "Factures"
     )
     
