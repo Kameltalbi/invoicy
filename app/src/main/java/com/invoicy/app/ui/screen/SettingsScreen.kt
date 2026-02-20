@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.invoicy.app.R
+import com.invoicy.app.ui.components.PdfTemplateDialog
 import com.invoicy.app.ui.viewmodel.SettingsViewModel
 
 /**
@@ -54,6 +55,8 @@ fun SettingsScreen(
     var showCurrencyDialog by remember { mutableStateOf(false) }
     var showInvoiceNumberingDialog by remember { mutableStateOf(false) }
     var showQuoteNumberingDialog by remember { mutableStateOf(false) }
+    var showPdfTemplateDialog by remember { mutableStateOf(false) }
+    var pdfTemplate by remember { mutableStateOf("classic") }
     
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -80,11 +83,18 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // SECTION 1: INFORMATIONS ENTREPRISE
             item {
                 Text(
-                    text = stringResource(R.string.settings_profile),
+                    text = "📋 Informations Entreprise",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Ces informations apparaîtront sur vos factures et devis",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
@@ -160,13 +170,79 @@ fun SettingsScreen(
                 )
             }
             
+            // SECTION 2: DOCUMENTS
             item {
+                Spacer(modifier = Modifier.height(16.dp))
                 Divider()
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Préférences",
+                    text = "📄 Documents",
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Configuration des factures, devis et taxes",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Template PDF",
+                    value = when (pdfTemplate) {
+                        "modern" -> "Moderne (Coloré)"
+                        "minimal" -> "Minimal (Épuré)"
+                        else -> "Classique (Sobre)"
+                    },
+                    icon = Icons.Default.Description,
+                    onClick = { showPdfTemplateDialog = true }
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Taxes personnalisées",
+                    value = "Gérer les taxes",
+                    icon = Icons.Default.Percent,
+                    onClick = onNavigateToTaxManagement
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Configuration factures",
+                    value = "Personnaliser le format",
+                    icon = Icons.Default.Receipt,
+                    onClick = { showInvoiceNumberingDialog = true }
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Configuration devis",
+                    value = "Personnaliser le format",
+                    icon = Icons.Default.Description,
+                    onClick = { showQuoteNumberingDialog = true }
+                )
+            }
+            
+            // SECTION 3: APPARENCE
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+                Divider()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "🎨 Apparence",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Personnalisez l'apparence de l'application",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
@@ -233,45 +309,9 @@ fun SettingsScreen(
                 }
             }
             
-            item {
-                Divider()
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Numérotation & Taxes",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            
-            item {
-                SettingItem(
-                    title = "Taxes personnalisées",
-                    value = "Gérer les taxes",
-                    icon = Icons.Default.Percent,
-                    onClick = onNavigateToTaxManagement
-                )
-            }
-            
-            item {
-                SettingItem(
-                    title = "Configuration factures",
-                    value = "Personnaliser le format",
-                    icon = Icons.Default.Receipt,
-                    onClick = { showInvoiceNumberingDialog = true }
-                )
-            }
-            
-            item {
-                SettingItem(
-                    title = "Configuration devis",
-                    value = "Personnaliser le format",
-                    icon = Icons.Default.Description,
-                    onClick = { showQuoteNumberingDialog = true }
-                )
-            }
-            
             if (!isPremium) {
                 item {
+                    Spacer(modifier = Modifier.height(16.dp))
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -360,6 +400,17 @@ fun SettingsScreen(
                 showQuoteNumberingDialog = false
             },
             onDismiss = { showQuoteNumberingDialog = false }
+        )
+    }
+    
+    if (showPdfTemplateDialog) {
+        PdfTemplateDialog(
+            currentTemplate = pdfTemplate,
+            onDismiss = { showPdfTemplateDialog = false },
+            onTemplateSelected = { template ->
+                pdfTemplate = template
+                showPdfTemplateDialog = false
+            }
         )
     }
 }
