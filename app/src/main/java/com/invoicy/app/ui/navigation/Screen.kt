@@ -4,6 +4,8 @@ package com.invoicy.app.ui.navigation
  * Définition des routes de navigation
  */
 sealed class Screen(val route: String) {
+    object TaxManagement : Screen("tax_management")
+    object CategoryManagement : Screen("category_management")
     object Onboarding : Screen("onboarding")
     object Dashboard : Screen("dashboard")
     object Invoices : Screen("invoices")

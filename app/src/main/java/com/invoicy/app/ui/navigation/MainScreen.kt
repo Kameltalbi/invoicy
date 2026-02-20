@@ -286,6 +286,9 @@ fun MainScreen() {
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToTaxManagement = {
                         navController.navigate("tax_management")
+                    },
+                    onNavigateToCategoryManagement = {
+                        navController.navigate("category_management")
                     }
                 )
             }
@@ -293,6 +296,13 @@ fun MainScreen() {
             // Tax Management
             composable("tax_management") {
                 TaxManagementScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            
+            // Category Management
+            composable("category_management") {
+                CategoryManagementScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

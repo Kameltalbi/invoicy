@@ -36,6 +36,7 @@ import com.invoicy.app.ui.viewmodel.SettingsViewModel
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onNavigateToTaxManagement: () -> Unit = {},
+    onNavigateToCategoryManagement: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val companyName by viewModel.companyName.collectAsState()
@@ -207,6 +208,15 @@ fun SettingsScreen(
                     value = "Gérer les taxes",
                     icon = Icons.Default.Percent,
                     onClick = onNavigateToTaxManagement
+                )
+            }
+            
+            item {
+                SettingItem(
+                    title = "Catégories",
+                    value = "Gérer les catégories",
+                    icon = Icons.Default.Category,
+                    onClick = onNavigateToCategoryManagement
                 )
             }
             

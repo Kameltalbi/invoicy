@@ -34,6 +34,22 @@ class CategoryViewModel @Inject constructor(
         }
     }
     
+    fun createCategory(name: String, description: String) {
+        viewModelScope.launch {
+            val category = Category(
+                name = name,
+                description = description
+            )
+            categoryRepository.insertCategory(category)
+        }
+    }
+    
+    fun updateCategory(category: Category) {
+        viewModelScope.launch {
+            categoryRepository.updateCategory(category)
+        }
+    }
+    
     fun deleteCategory(category: Category) {
         viewModelScope.launch {
             categoryRepository.deleteCategory(category)
