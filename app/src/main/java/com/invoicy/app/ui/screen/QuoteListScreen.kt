@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.invoicy.app.R
 import com.invoicy.app.data.entity.QuoteStatus
 import com.invoicy.app.ui.viewmodel.QuoteViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,11 +30,13 @@ fun QuoteListScreen(
     onNavigateBack: () -> Unit,
     onNavigateToQuote: (Long) -> Unit,
     onNavigateToNewQuote: () -> Unit,
-    viewModel: QuoteViewModel = hiltViewModel()
+    viewModel: QuoteViewModel = hiltViewModel(),
+    settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val quotes by viewModel.quotes.collectAsState()
     var quoteToDelete by remember { mutableStateOf<com.invoicy.app.data.entity.QuoteWithDetails?>(null) }
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    val currency by settingsViewModel.currency.collectAsState()
     
     Scaffold(
         topBar = {
@@ -90,14 +93,20 @@ fun QuoteListScreen(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ) {
                 items(quotes) { quote ->
+                    val scope = rememberCoroutineScope()
                     QuoteCard(
                         quote = quote,
+                        currency = currency,
                         dateFormat = dateFormat,
                         onClick = { onNavigateToQuote(quote.quote.id) },
                         onEdit = { onNavigateToQuote(quote.quote.id) },
                         onDelete = { quoteToDelete = quote },
                         onDuplicate = { viewModel.duplicateQuote(quote.quote.id) },
-                        onConvertToInvoice = { /* TODO: Implement convert */ }
+                        onConvertToInvoice = { 
+                            scope.launch {
+                                viewModel.convertToInvoice(quote.quote.id)
+                            }
+                        }
                     )
                 }
             }
@@ -132,6 +141,7 @@ fun QuoteListScreen(
 @Composable
 fun QuoteCard(
     quote: com.invoicy.app.data.entity.QuoteWithDetails,
+    currency: String,
     dateFormat: SimpleDateFormat,
     onClick: () -> Unit,
     onEdit: () -> Unit,
@@ -184,7 +194,7 @@ fun QuoteCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "${quote.getTotal()} €",
+                        text = com.invoicy.app.utils.CurrencyFormatter.format(quote.getTotal(), currency),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

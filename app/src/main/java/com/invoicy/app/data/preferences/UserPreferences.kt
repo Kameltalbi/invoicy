@@ -45,6 +45,9 @@ class UserPreferences @Inject constructor(
         private val QUOTE_YEAR_RESET = booleanPreferencesKey("quote_year_reset")
         private val QUOTE_LAST_YEAR = intPreferencesKey("quote_last_year")
         private val QUOTE_COUNTER = intPreferencesKey("quote_counter")
+        
+        // Template PDF
+        private val PDF_TEMPLATE = stringPreferencesKey("pdf_template")
     }
     
     // Profil émetteur

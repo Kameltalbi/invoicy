@@ -31,10 +31,12 @@ fun InvoiceListScreen(
     onNavigateBack: () -> Unit,
     onNavigateToInvoice: (Long) -> Unit,
     onNavigateToNewInvoice: () -> Unit,
-    viewModel: InvoiceViewModel = hiltViewModel()
+    viewModel: InvoiceViewModel = hiltViewModel(),
+    settingsViewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
 ) {
     val invoices by viewModel.invoices.collectAsState()
     var invoiceToDelete by remember { mutableStateOf<InvoiceWithDetails?>(null) }
+    val currency by settingsViewModel.currency.collectAsState()
     
     Scaffold(
         topBar = {
@@ -94,6 +96,7 @@ fun InvoiceListScreen(
                 items(invoices, key = { it.invoice.id }) { invoice ->
                     InvoiceCard(
                         invoice = invoice,
+                        currency = currency,
                         onClick = { onNavigateToInvoice(invoice.invoice.id) },
                         onEdit = { onNavigateToInvoice(invoice.invoice.id) },
                         onDelete = { invoiceToDelete = invoice },
@@ -101,8 +104,7 @@ fun InvoiceListScreen(
                         onMarkPaid = { 
                             viewModel.updateInvoiceStatus(invoice.invoice.id, InvoiceStatus.PAID)
                         },
-                        onDownloadPdf = { /* TODO: Implement download */ },
-                        viewModel = hiltViewModel()
+                        onDownloadPdf = { /* TODO: Implement download */ }
                     )
                 }
             }
@@ -137,16 +139,15 @@ fun InvoiceListScreen(
 @Composable
 fun InvoiceCard(
     invoice: InvoiceWithDetails,
+    currency: String,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onDuplicate: () -> Unit,
     onMarkPaid: () -> Unit,
-    onDownloadPdf: () -> Unit,
-    viewModel: com.invoicy.app.ui.viewmodel.SettingsViewModel = hiltViewModel()
+    onDownloadPdf: () -> Unit
 ) {
     val dateFormat = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
-    val currency by viewModel.currency.collectAsState()
     var showMenu by remember { mutableStateOf(false) }
     
     Card(

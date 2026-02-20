@@ -90,7 +90,12 @@ class PdfGenerator @Inject constructor(
             .add(invoice.client.phone + "\n")
             .add(invoice.client.address + "\n")
             .add(invoice.client.country)
-            .setFontSize(10f)
+        
+        if (invoice.client.taxNumber.isNotBlank()) {
+            clientInfo.add("\nN° fiscal: ${invoice.client.taxNumber}")
+        }
+        
+        clientInfo.setFontSize(10f)
         document.add(clientInfo)
         
         // Tableau des prestations
@@ -209,7 +214,12 @@ class PdfGenerator @Inject constructor(
             .add(quote.client.phone + "\n")
             .add(quote.client.address + "\n")
             .add(quote.client.country)
-            .setFontSize(10f)
+        
+        if (quote.client.taxNumber.isNotBlank()) {
+            clientInfo.add("\nN° fiscal: ${quote.client.taxNumber}")
+        }
+        
+        clientInfo.setFontSize(10f)
         document.add(clientInfo)
         
         val itemsTable = Table(floatArrayOf(3f, 1f, 1.5f, 1f, 1.5f))
