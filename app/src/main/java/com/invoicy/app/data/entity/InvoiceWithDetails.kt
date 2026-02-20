@@ -17,7 +17,12 @@ data class InvoiceWithDetails(
         parentColumn = "id",
         entityColumn = "invoiceId"
     )
-    val items: List<InvoiceItem>
+    val items: List<InvoiceItem>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "invoiceId"
+    )
+    val appliedTaxes: List<InvoiceTax> = emptyList()
 ) {
     /**
      * Calcule le sous-total HT de la facture
@@ -41,12 +46,18 @@ data class InvoiceWithDetails(
     }
 
     /**
+     * Calcule le montant total des taxes personnalisées
+     */
+    fun getCustomTaxesTotal(): Double = appliedTaxes.sumOf { it.taxAmount }
+    
+    /**
      * Calcule le total TTC de la facture
      */
     fun getTotal(): Double {
         val subtotal = getSubtotal()
         val vatTotal = getVatTotal()
         val discount = getDiscountAmount()
-        return subtotal + vatTotal - discount
+        val customTaxes = getCustomTaxesTotal()
+        return subtotal + vatTotal - discount + customTaxes
     }
 }

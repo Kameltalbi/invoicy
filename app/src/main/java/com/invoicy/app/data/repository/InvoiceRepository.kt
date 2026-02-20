@@ -17,6 +17,7 @@ import javax.inject.Singleton
 class InvoiceRepository @Inject constructor(
     private val invoiceDao: InvoiceDao,
     private val invoiceItemDao: InvoiceItemDao,
+    private val invoiceTaxDao: com.invoicy.app.data.dao.InvoiceTaxDao,
     private val numberingService: NumberingService
 ) {
     fun getAllInvoices(): Flow<List<InvoiceWithDetails>> = invoiceDao.getAllInvoices()
@@ -33,22 +34,36 @@ class InvoiceRepository @Inject constructor(
     fun getInvoicesByStatus(status: InvoiceStatus): Flow<List<InvoiceWithDetails>> = 
         invoiceDao.getInvoicesByStatus(status)
     
-    suspend fun insertInvoice(invoice: Invoice, items: List<InvoiceItem>): Long {
+    suspend fun insertInvoice(invoice: Invoice, items: List<InvoiceItem>, taxes: List<InvoiceTax> = emptyList()): Long {
         val invoiceId = invoiceDao.insertInvoice(invoice)
         val itemsWithInvoiceId = items.mapIndexed { index, item ->
             item.copy(invoiceId = invoiceId, position = index)
         }
         invoiceItemDao.insertItems(itemsWithInvoiceId)
+        
+        // Ajouter les taxes
+        val taxesWithInvoiceId = taxes.map { it.copy(invoiceId = invoiceId) }
+        if (taxesWithInvoiceId.isNotEmpty()) {
+            invoiceTaxDao.insertInvoiceTaxes(taxesWithInvoiceId)
+        }
+        
         return invoiceId
     }
     
-    suspend fun updateInvoice(invoice: Invoice, items: List<InvoiceItem>) {
+    suspend fun updateInvoice(invoice: Invoice, items: List<InvoiceItem>, taxes: List<InvoiceTax> = emptyList()) {
         invoiceDao.updateInvoice(invoice)
         invoiceItemDao.deleteItemsByInvoice(invoice.id)
         val itemsWithPosition = items.mapIndexed { index, item ->
             item.copy(invoiceId = invoice.id, position = index)
         }
         invoiceItemDao.insertItems(itemsWithPosition)
+        
+        // Mettre à jour les taxes
+        invoiceTaxDao.deleteInvoiceTaxes(invoice.id)
+        val taxesWithInvoiceId = taxes.map { it.copy(invoiceId = invoice.id) }
+        if (taxesWithInvoiceId.isNotEmpty()) {
+            invoiceTaxDao.insertInvoiceTaxes(taxesWithInvoiceId)
+        }
     }
     
     suspend fun deleteInvoice(invoice: Invoice) {

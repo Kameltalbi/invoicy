@@ -17,7 +17,12 @@ data class QuoteWithDetails(
         parentColumn = "id",
         entityColumn = "quoteId"
     )
-    val items: List<QuoteItem>
+    val items: List<QuoteItem>,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "quoteId"
+    )
+    val appliedTaxes: List<QuoteTax> = emptyList()
 ) {
     /**
      * Calcule le sous-total HT du devis
@@ -41,12 +46,18 @@ data class QuoteWithDetails(
     }
 
     /**
+     * Calcule le montant total des taxes personnalisées
+     */
+    fun getCustomTaxesTotal(): Double = appliedTaxes.sumOf { it.taxAmount }
+
+    /**
      * Calcule le total TTC du devis
      */
     fun getTotal(): Double {
         val subtotal = getSubtotal()
         val vatTotal = getVatTotal()
         val discount = getDiscountAmount()
-        return subtotal + vatTotal - discount
+        val customTaxes = getCustomTaxesTotal()
+        return subtotal + vatTotal - discount + customTaxes
     }
 }

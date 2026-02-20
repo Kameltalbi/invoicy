@@ -17,6 +17,7 @@ import javax.inject.Singleton
 class QuoteRepository @Inject constructor(
     private val quoteDao: QuoteDao,
     private val quoteItemDao: QuoteItemDao,
+    private val quoteTaxDao: com.invoicy.app.data.dao.QuoteTaxDao,
     private val numberingService: NumberingService
 ) {
     fun getAllQuotes(): Flow<List<QuoteWithDetails>> = quoteDao.getAllQuotes()
@@ -33,22 +34,36 @@ class QuoteRepository @Inject constructor(
     fun getQuotesByStatus(status: QuoteStatus): Flow<List<QuoteWithDetails>> = 
         quoteDao.getQuotesByStatus(status)
     
-    suspend fun insertQuote(quote: Quote, items: List<QuoteItem>): Long {
+    suspend fun insertQuote(quote: Quote, items: List<QuoteItem>, taxes: List<QuoteTax> = emptyList()): Long {
         val quoteId = quoteDao.insertQuote(quote)
         val itemsWithQuoteId = items.mapIndexed { index, item ->
             item.copy(quoteId = quoteId, position = index)
         }
         quoteItemDao.insertItems(itemsWithQuoteId)
+        
+        // Ajouter les taxes
+        val taxesWithQuoteId = taxes.map { it.copy(quoteId = quoteId) }
+        if (taxesWithQuoteId.isNotEmpty()) {
+            quoteTaxDao.insertQuoteTaxes(taxesWithQuoteId)
+        }
+        
         return quoteId
     }
     
-    suspend fun updateQuote(quote: Quote, items: List<QuoteItem>) {
+    suspend fun updateQuote(quote: Quote, items: List<QuoteItem>, taxes: List<QuoteTax> = emptyList()) {
         quoteDao.updateQuote(quote)
         quoteItemDao.deleteItemsByQuote(quote.id)
         val itemsWithPosition = items.mapIndexed { index, item ->
             item.copy(quoteId = quote.id, position = index)
         }
         quoteItemDao.insertItems(itemsWithPosition)
+        
+        // Mettre à jour les taxes
+        quoteTaxDao.deleteQuoteTaxes(quote.id)
+        val taxesWithQuoteId = taxes.map { it.copy(quoteId = quote.id) }
+        if (taxesWithQuoteId.isNotEmpty()) {
+            quoteTaxDao.insertQuoteTaxes(taxesWithQuoteId)
+        }
     }
     
     suspend fun deleteQuote(quote: Quote) {
