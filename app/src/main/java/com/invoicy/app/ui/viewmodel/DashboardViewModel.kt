@@ -40,11 +40,51 @@ class DashboardViewModel @Inject constructor(
                     totalPaidThisMonth = totalPaid,
                     pendingInvoices = pending,
                     overdueInvoices = overdue,
+                    monthlySales = generateMonthlySalesData(),
+                    salesByCategory = generateCategorySalesData(),
+                    currentYearSales = generateCurrentYearData(),
+                    previousYearSales = generatePreviousYearData(),
                     isLoading = false
                 )
             }.collect { state ->
                 _uiState.value = state
             }
+        }
+    }
+    
+    private suspend fun generateMonthlySalesData(): List<Pair<String, Double>> {
+        // TODO: Récupérer les vraies données depuis la base
+        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
+        val currentMonth = java.util.Calendar.getInstance().get(java.util.Calendar.MONTH)
+        return months.take(currentMonth + 1).mapIndexed { index, month ->
+            month to (Math.random() * 5000 + 1000)
+        }
+    }
+    
+    private suspend fun generateCategorySalesData(): List<Pair<String, Double>> {
+        // TODO: Récupérer les vraies données depuis la base
+        return listOf(
+            "Consulting" to 12500.0,
+            "Développement" to 8900.0,
+            "Design" to 5600.0,
+            "Formation" to 3200.0,
+            "Support" to 2100.0
+        )
+    }
+    
+    private suspend fun generateCurrentYearData(): List<Pair<String, Double>> {
+        // TODO: Récupérer les vraies données depuis la base
+        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
+        return months.mapIndexed { index, month ->
+            month to (Math.random() * 5000 + 2000)
+        }
+    }
+    
+    private suspend fun generatePreviousYearData(): List<Pair<String, Double>> {
+        // TODO: Récupérer les vraies données depuis la base
+        val months = listOf("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Aoû", "Sep", "Oct", "Nov", "Déc")
+        return months.mapIndexed { index, month ->
+            month to (Math.random() * 4000 + 1500)
         }
     }
 }
@@ -57,5 +97,9 @@ data class DashboardUiState(
     val totalPaidThisMonth: Double = 0.0,
     val pendingInvoices: Int = 0,
     val overdueInvoices: Int = 0,
+    val monthlySales: List<Pair<String, Double>> = emptyList(),
+    val salesByCategory: List<Pair<String, Double>> = emptyList(),
+    val currentYearSales: List<Pair<String, Double>> = emptyList(),
+    val previousYearSales: List<Pair<String, Double>> = emptyList(),
     val isLoading: Boolean = true
 )

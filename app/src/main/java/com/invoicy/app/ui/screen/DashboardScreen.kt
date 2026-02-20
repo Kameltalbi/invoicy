@@ -119,33 +119,43 @@ fun DashboardScreen(
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Actions rapides",
+                        text = "Analyses",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 
+                // Graphique barres - Ventes par mois
                 item {
-                    QuickActionCard(
-                        title = stringResource(R.string.nav_invoices),
-                        icon = Icons.Default.Receipt,
-                        onClick = onNavigateToInvoices
+                    com.invoicy.app.ui.components.MonthlyBarChart(
+                        data = uiState.monthlySales,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 
+                // Graphique camembert - Ventes par catégorie
                 item {
-                    QuickActionCard(
-                        title = stringResource(R.string.nav_quotes),
-                        icon = Icons.Default.Description,
-                        onClick = onNavigateToQuotes
+                    com.invoicy.app.ui.components.CategoryPieChart(
+                        data = uiState.salesByCategory,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 
+                // Graphique courbe - Évolution année actuelle vs année -1
                 item {
-                    QuickActionCard(
-                        title = stringResource(R.string.nav_clients),
-                        icon = Icons.Default.People,
-                        onClick = onNavigateToClients
+                    com.invoicy.app.ui.components.YearComparisonLineChart(
+                        currentYearData = uiState.currentYearSales,
+                        previousYearData = uiState.previousYearSales,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                
+                // Graphique payé vs non payé
+                item {
+                    com.invoicy.app.ui.components.PaidVsUnpaidChart(
+                        paidAmount = uiState.totalPaidThisMonth,
+                        unpaidAmount = uiState.totalInvoicedThisMonth - uiState.totalPaidThisMonth,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
